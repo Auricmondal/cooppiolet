@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react'
 
 const Newsletter = () => {
-  return <div>Newsletter</div>;
-};
+  return <div>Newsletter</div>
+}
 
-export default Newsletter;
+export default Newsletter

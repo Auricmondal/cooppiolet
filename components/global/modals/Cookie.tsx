@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react'
 
 const Cookie = () => {
-  return <div>Cookie</div>;
-};
+  return <div>Cookie</div>
+}
 
-export default Cookie;
+export default Cookie
