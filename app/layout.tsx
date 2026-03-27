@@ -3,12 +3,14 @@ import { Geist, Geist_Mono, Inter } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/global/Navbar'
 import Footer from '@/components/global/Footer'
-import Modal from '@/components/global/modals/Modal'
 import { cn } from '@/lib/utils'
 import { Toaster } from '@/components/ui/sonner'
-import ModalWrapper from '@/components/Wrapper/ModalWrapper'
 import { MenuDrawer } from '@/components/global/Navbar/MobileNav'
 import NavbarProvider from '@/context/NavbarContext'
+import GlobalProviderWrapper from '@/components/Wrapper/GlobalProviderWrapper'
+import Cookie from '@/components/global/modals/Cookie'
+import Newsletter from '@/components/global/modals/Newsletter'
+import ContactModal from '@/components/global/modals/ContactModal'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
@@ -46,16 +48,20 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col">
         {/* <MenuDrawer /> */}
-        <Toaster />
-        <ModalWrapper>
-          <Modal />
-        </ModalWrapper>
-        <NavbarProvider>
-          <Navbar />
-          <MenuDrawer />
-        </NavbarProvider>
-        {children}
-        <Footer />
+
+        <GlobalProviderWrapper>
+          <Toaster />
+          <Cookie />
+          <ContactModal />
+          {/* <Newsletter /> */}
+
+          <NavbarProvider>
+            <Navbar />
+            <MenuDrawer />
+          </NavbarProvider>
+          {children}
+          <Footer />
+        </GlobalProviderWrapper>
       </body>
     </html>
   )

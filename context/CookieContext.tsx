@@ -1,55 +1,117 @@
 'use client'
-import { createContext, useState } from 'react'
 
-export enum ModalType {
-  FORM = 'form',
-  NEWSLETTER = 'newsletter',
+import React, { createContext, useEffect, useContext, useReducer, useMemo } from 'react'
+import { v4 as uuidv4 } from 'uuid'
+
+// --- 1. Pure Helper Functions ---
+const setCookie = (name: string, value: string, days = 365) => {
+  if (typeof document === 'undefined') return
+  const date = new Date()
+  date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000)
+  document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/;SameSite=Lax`
 }
 
-export const ModalContext = createContext({
-  isModalOpen: false,
-  modalContent: null as React.ReactNode,
-  modalType: ModalType.FORM,
-  openModal: (type: ModalType, content: React.ReactNode) => {},
-  closeModal: () => {},
-})
+const getCookie = (name: string) => {
+  if (typeof document === 'undefined') return null
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop()?.split(';').shift() || null
+  return null
+}
 
-const ModalProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [modalContent, setModalContent] = useState<React.ReactNode>(null)
-  const [modalType, setModalType] = useState(ModalType.FORM)
+// --- 2. State & Reducer Setup ---
+interface CookieState {
+  isInitialized: boolean
+  anonymousId: string | null
+  hasAcceptedCookies: boolean
+  isSubscribed: boolean
+}
 
-  const toggleModal = () => {
-    setIsModalOpen((prev) => !prev)
+interface CookieContextProps extends CookieState {
+  acceptCookies: () => void
+  setSubscriptionStatus: (status: boolean) => void
+}
+
+type Action =
+  | { type: 'HYDRATE'; payload: Partial<CookieState> }
+  | { type: 'ACCEPT_COOKIES' }
+  | { type: 'SET_SUBSCRIPTION'; payload: boolean }
+
+const initialState: CookieState = {
+  isInitialized: false,
+  anonymousId: null,
+  hasAcceptedCookies: false,
+  isSubscribed: false,
+}
+
+const cookieReducer = (state: CookieState, action: Action): CookieState => {
+  switch (action.type) {
+    case 'HYDRATE':
+      return { ...state, ...action.payload, isInitialized: true }
+    case 'ACCEPT_COOKIES':
+      return { ...state, hasAcceptedCookies: true }
+    case 'SET_SUBSCRIPTION':
+      return { ...state, isSubscribed: action.payload }
+    default:
+      return state
+  }
+}
+
+export const CookieContext = createContext<CookieContextProps | undefined>(undefined)
+
+// --- 3. The Provider ---
+export const CookieProvider = ({ children }: { children: React.ReactNode }) => {
+  // Replaced useState entirely with useReducer
+  const [state, dispatch] = useReducer(cookieReducer, initialState)
+
+  useEffect(() => {
+    // 1. Handle all the reading and ID generation outside of React's state cycle
+    let currentId = getCookie('anonymous_id')
+    if (!currentId) {
+      currentId = uuidv4()
+      setCookie('anonymous_id', currentId)
+    }
+
+    const accepted = getCookie('cookie_accepted') === 'true'
+    const subscribed = getCookie('newsletter_subscribed') === 'true'
+
+    // 2. Fire a single, clean dispatch action. No setState loops here.
+    dispatch({
+      type: 'HYDRATE',
+      payload: {
+        anonymousId: currentId,
+        hasAcceptedCookies: accepted,
+        isSubscribed: subscribed,
+      },
+    })
+  }, []) // Empty array is totally safe here
+
+  // --- Actions ---
+  const acceptCookies = () => {
+    setCookie('cookie_accepted', 'true')
+    dispatch({ type: 'ACCEPT_COOKIES' })
   }
 
-  const openModal = (type: ModalType, content: React.ReactNode) => {
-    setModalType(type)
-    setModalContent(content)
-    setIsModalOpen(true)
+  const setSubscriptionStatus = (status: boolean) => {
+    setCookie('newsletter_subscribed', status.toString())
+    dispatch({ type: 'SET_SUBSCRIPTION', payload: status })
   }
 
-  const closeModal = () => {
-    setIsModalOpen(false)
-    setTimeout(() => {
-      setModalContent(null)
-      setModalType(ModalType.FORM)
-    }, 500)
-  }
-
-  return (
-    <ModalContext.Provider
-      value={{
-        isModalOpen,
-        modalContent,
-        modalType,
-        openModal,
-        closeModal,
-      }}
-    >
-      {children}
-    </ModalContext.Provider>
+  // Memoize to prevent child re-renders
+  const contextValue = useMemo(
+    () => ({
+      ...state,
+      acceptCookies,
+      setSubscriptionStatus,
+    }),
+    [state]
   )
+
+  return <CookieContext.Provider value={contextValue}>{children}</CookieContext.Provider>
 }
 
-export default ModalProvider
+export const useUserTracking = () => {
+  const context = useContext(CookieContext)
+  if (!context) throw new Error('useUserTracking must be used within a CookieProvider')
+  return context
+}

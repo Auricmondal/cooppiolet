@@ -129,12 +129,14 @@ const MenuDrawer = () => {
     >
       {/* Header Area */}
       <div className="z-50 flex w-full items-center justify-between gap-4 p-4">
-        <Image
-          src={`http://localhost:1337${navbarContent?.logo?.url || ''}`}
-          alt={navbarContent?.logo?.alternativeText || 'Logo'}
-          width={navbarContent?.logo?.width || 120}
-          height={navbarContent?.logo?.height || 40}
-        />
+        {navbarContent?.logo?.url && (
+          <Image
+            src={`http://localhost:1337${navbarContent?.logo?.url || ''}`}
+            alt={navbarContent?.logo?.alternativeText || 'Logo'}
+            width={navbarContent?.logo?.width || 120}
+            height={navbarContent?.logo?.height || 40}
+          />
+        )}
         <MenuButton />
       </div>
 

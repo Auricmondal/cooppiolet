@@ -1,7 +1,13 @@
-import React from 'react'
+import { Method, strapiRequest } from '@/lib/api'
+import CookieClient from './CookieClient'
+import { CookieClientProps } from '@/types/cookie'
+interface Data {
+  data: CookieClientProps['content']
+}
+const Cookie = async () => {
+  const data: Data = await strapiRequest('/cookie-content?populate=*', Method.GET)
 
-const Cookie = () => {
-  return <div>Cookie</div>
+  return <CookieClient content={data.data} />
 }
 
 export default Cookie
