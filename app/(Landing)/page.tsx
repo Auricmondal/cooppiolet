@@ -4,7 +4,7 @@ import Logos from '@/components/home/Logos'
 import Solutions from '@/components/home/Solutions'
 import FeatureHighlights from '@/components/home/FeatureHighlights'
 import FAQ from '@/components/home/FAQ'
-import CTA from '@/components/home/CTA'
+import CTA from '@/components/global/CTA'
 
 const page = () => {
   return (

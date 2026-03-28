@@ -107,7 +107,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             {withDot && (
               <span
                 className={cn(
-                  'bg-cst-secondary h-2.5 w-2.5 shrink-0 rounded-full transition-transform group-hover/button:scale-125',
+                  'bg-cst-secondary h-2.5 w-2.5 shrink-0 cursor-pointer rounded-full transition-transform group-hover/button:scale-125',
                   dotClassName
                 )}
               />

@@ -46,7 +46,6 @@ const ContactModal = () => {
     },
     enabled: isModalOpen && modalType === ModalType.FORM,
   })
-  console.log(formContent)
 
   // 2. Setup react-hook-form
   const {
