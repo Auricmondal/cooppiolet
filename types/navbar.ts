@@ -27,6 +27,12 @@ export interface Navbar {
     updatedAt: string
     publishedAt: string
   }
+  company_email: string
+  legal_links: {
+    id: number
+    label: string
+    href: string
+  }[]
   Links: {
     id: number
     label: string

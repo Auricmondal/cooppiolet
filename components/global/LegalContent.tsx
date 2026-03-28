@@ -13,7 +13,7 @@ const LegalContent = ({ title, effective_date, id, legal_info }: Legal) => {
   })
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 pt-32">
       <H1>
         <BlurText
           text={title}

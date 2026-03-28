@@ -4,28 +4,46 @@ import Link from 'next/link'
 import React, { useState } from 'react'
 import { TextSwapAnimation } from '../animations/TextHover'
 
-const LinkTag = ({
-  href,
-  label,
-  className,
-}: {
-  href: string
-  label: string
-  isPrimary?: boolean
-  isCTA?: boolean
-  className?: string
-}) => {
+const LinkTag = React.forwardRef<
+  HTMLAnchorElement,
+  {
+    href: string
+    label: string
+    isPrimary?: boolean
+    isCTA?: boolean
+    className?: string
+    onMouseEnter?: () => void
+    onMouseLeave?: () => void
+    onClick?: () => void
+  }
+>(({ href, label, className, onMouseEnter, onMouseLeave, onClick, ...props }, ref) => {
   const [isHovered, setIsHovered] = useState(false)
+
+  const handleMouseEnter = () => {
+    setIsHovered(true)
+    onMouseEnter?.()
+  }
+
+  const handleMouseLeave = () => {
+    setIsHovered(false)
+    onMouseLeave?.()
+  }
+
   return (
     <Link
       href={href}
       className={cn(className)}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={onClick}
+      ref={ref}
+      {...props}
     >
       <TextSwapAnimation label={label} isHovered={isHovered} />
     </Link>
   )
-}
+})
+
+LinkTag.displayName = 'LinkTag'
 
 export default LinkTag

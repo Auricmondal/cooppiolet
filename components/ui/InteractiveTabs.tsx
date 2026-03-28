@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button'
 import React from 'react'
 import Image from 'next/image'
 import { ArrowRightCircle } from 'lucide-react'
@@ -28,14 +29,14 @@ const InteractiveTabs = ({ tabs, activeTab, onTabHover }: InteractiveTabsProps) 
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id
             return (
-              <button
+              <Button
                 key={tab.id}
+                variant="ghost"
+                rounded="lg"
                 onMouseEnter={() => onTabHover(tab.id)}
                 onClick={() => onTabHover(tab.id)}
-                className={`group flex items-center justify-between gap-4 rounded-[1.2rem] p-3 text-left transition-all duration-500 ease-out ${
-                  isActive
-                    ? 'scale-[1.02] bg-[#F4F6F6] shadow-inner'
-                    : 'bg-transparent hover:bg-slate-50'
+                className={`group flex h-auto items-center justify-between gap-4 border-none p-3 text-left whitespace-normal transition-all duration-500 ease-out hover:bg-slate-50 ${
+                  isActive ? 'scale-[1.02] bg-[#F4F6F6] shadow-inner' : 'bg-transparent'
                 }`}
               >
                 <div className="flex w-full items-center gap-4">
@@ -63,7 +64,7 @@ const InteractiveTabs = ({ tabs, activeTab, onTabHover }: InteractiveTabsProps) 
                   strokeWidth={1.5}
                   className={`mr-2 shrink-0 transition-all duration-500 ${isActive ? 'text-cst-green translate-x-0 opacity-100' : '-translate-x-4 text-transparent opacity-0'}`}
                 />
-              </button>
+              </Button>
             )
           })}
         </div>

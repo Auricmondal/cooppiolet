@@ -2,6 +2,7 @@ import LegalContent from '@/components/global/LegalContent'
 import PrimaryWrapper from '@/components/Wrapper/PrimaryWrapper'
 import { Method, strapiRequest } from '@/lib/api'
 import { Legal } from '@/types/legal'
+import TermClient from './TermClient'
 
 interface Data {
   data: {
@@ -13,12 +14,7 @@ const page = async () => {
   const tnc: Legal = legalData.data.Legal
   return (
     <PrimaryWrapper>
-      <LegalContent
-        effective_date={tnc.effective_date}
-        id={tnc.id}
-        legal_info={tnc.legal_info}
-        title={tnc.title}
-      />
+      <TermClient initialData={legalData} />
     </PrimaryWrapper>
   )
 }

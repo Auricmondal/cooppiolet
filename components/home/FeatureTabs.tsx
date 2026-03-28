@@ -1,4 +1,4 @@
-'use client'
+import { Button } from '@/components/ui/button'
 import React, { useState } from 'react'
 import Image from 'next/image'
 import { FileText, Users, Building2, Calendar, LayoutDashboard } from 'lucide-react'
@@ -58,13 +58,15 @@ const FeatureTabs = () => {
               {TABS.map((tab) => {
                 const isActive = activeTab === tab.id
                 return (
-                  <button
+                  <Button
                     key={tab.id}
+                    variant="ghost"
+                    rounded="lg"
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-start gap-4 rounded-2xl p-4 text-left transition-all duration-300 ${
+                    className={`flex h-auto items-start justify-start gap-4 border-none p-4 text-left whitespace-normal transition-all duration-300 hover:bg-slate-50 ${
                       isActive
-                        ? 'bg-cst-green shadow-cst-green/20 text-white shadow-lg'
-                        : 'bg-transparent text-slate-600 hover:bg-slate-50'
+                        ? 'bg-cst-green shadow-cst-green/20 shadow-cst-green/40 hover:bg-cst-green text-white shadow-lg hover:text-white'
+                        : 'bg-transparent text-slate-600'
                     }`}
                   >
                     <div
@@ -84,7 +86,7 @@ const FeatureTabs = () => {
                         </p>
                       )}
                     </div>
-                  </button>
+                  </Button>
                 )
               })}
             </div>

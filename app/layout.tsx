@@ -11,6 +11,7 @@ import GlobalProviderWrapper from '@/components/Wrapper/GlobalProviderWrapper'
 import Cookie from '@/components/global/modals/Cookie'
 import Newsletter from '@/components/global/modals/Newsletter'
 import ContactModal from '@/components/global/modals/ContactModal'
+import ReactQueryProvider from '@/components/Wrapper/ReactQueryProvider'
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-sans' })
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-serif' })
@@ -51,19 +52,21 @@ export default function RootLayout({
       <body className="flex min-h-full flex-col">
         {/* <MenuDrawer /> */}
 
-        <GlobalProviderWrapper>
-          <Toaster />
-          <Cookie />
-          <ContactModal />
-          <Newsletter />
+        <ReactQueryProvider>
+          <GlobalProviderWrapper>
+            <Toaster />
+            <Cookie />
+            <ContactModal />
+            <Newsletter />
 
-          <NavbarProvider>
-            <Navbar />
-            <MenuDrawer />
-          </NavbarProvider>
-          {children}
-          <Footer />
-        </GlobalProviderWrapper>
+            <NavbarProvider>
+              <Navbar />
+              <MenuDrawer />
+            </NavbarProvider>
+            {children}
+            <Footer />
+          </GlobalProviderWrapper>
+        </ReactQueryProvider>
       </body>
     </html>
   )

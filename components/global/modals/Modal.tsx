@@ -1,4 +1,4 @@
-'use client'
+import { Button } from '@/components/ui/button'
 import React from 'react'
 import Image from 'next/image'
 import { H4 } from '../Typography'
@@ -92,12 +92,12 @@ const Modal = ({
 
       {/* 2. Modal Content */}
       <div
-        className={`bg-cst-neutral-1/95 pointer-events-auto relative w-full max-w-[440px] rounded-[32px] border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.1)] backdrop-blur-md transition-all`}
+        className={`bg-cst-neutral-01/20 pointer-events-auto relative w-full max-w-[440px] rounded-[32px] border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.1)] backdrop-blur-md transition-all`}
       >
         {ModalImage?.url && (
           <div className="mb-4 overflow-hidden rounded-xl">
             <Image
-              src={`http://localhost:1337${ModalImage?.url}`}
+              src={`${process.env.NEXT_PUBLIC_STRAPI_URL}${ModalImage?.url}`}
               alt={ModalImage.alternativeText || 'Modal Image'}
               width={100}
               height={100}
@@ -106,11 +106,14 @@ const Modal = ({
           </div>
         )}
         {header.close && (
-          <X
-            size={24}
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={header.closeAction}
-            className="hover:text-cst-neutral-05 absolute top-4 right-4 z-50 cursor-pointer text-white transition-colors"
-          />
+            className="absolute top-4 right-4 z-50 text-white hover:bg-white/10 hover:text-white"
+          >
+            <X size={24} />
+          </Button>
         )}
 
         <div className="p-8">
@@ -129,21 +132,15 @@ const Modal = ({
           <div>{children}</div>
 
           {/* Footer */}
-          <div className="mt-6 flex gap-2">
+          <div className="mt-6 flex gap-3">
             {secondaryBtn && (
-              <button
-                className="flex-1 rounded-full border border-black/5 bg-white/50 px-6 py-3 text-sm font-semibold text-black transition-colors hover:bg-white"
-                onClick={secondaryBtn.onClick}
-              >
+              <Button variant="outline" className="flex-1" onClick={secondaryBtn.onClick}>
                 {secondaryBtn.label}
-              </button>
+              </Button>
             )}
-            <button
-              className="flex-1 rounded-full bg-black px-6 py-3 text-sm font-semibold text-white transition-transform hover:bg-zinc-800 active:scale-95"
-              onClick={primaryBtn.onClick}
-            >
+            <Button variant="primary" className="flex-1" onClick={primaryBtn.onClick}>
               {primaryBtn.label}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

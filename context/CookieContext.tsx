@@ -97,12 +97,10 @@ export const CookieProvider = ({ children }: { children: React.ReactNode }) => {
   // --- Actions ---
   const acceptCookies = () => {
     setCookie('cookie_accepted', 'true')
-    setCookie('cookie_responded', 'true')
     dispatch({ type: 'ACCEPT_COOKIES' })
   }
 
   const denyCookies = () => {
-    setCookie('cookie_responded', 'true')
     dispatch({ type: 'DENY_COOKIES' })
   }
 

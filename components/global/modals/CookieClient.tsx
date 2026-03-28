@@ -5,10 +5,27 @@ import { ModalType } from '@/context/ModalContext'
 import React from 'react'
 import { CookieClientProps } from '@/types/cookie'
 import { useUserTracking } from '@/context/CookieContext'
+import { useMutation } from '@tanstack/react-query'
+import axios from 'axios'
+import { toast } from 'sonner'
 
 const CookieClient = ({ content }: CookieClientProps) => {
-  const { isInitialized, hasRespondedToCookies, acceptCookies, denyCookies } = useUserTracking()
-
+  const { isInitialized, hasRespondedToCookies, anonymousId, acceptCookies, denyCookies } =
+    useUserTracking()
+  const { mutate: trackCookieAcceptance } = useMutation({
+    mutationFn: async () => {
+      return await axios.post('/api/cookie', {
+        data: {
+          anonymous_id: anonymousId,
+          accepted: true,
+        },
+      })
+    },
+    onError: () => {
+      toast.error('Something went wrong')
+      console.log('Cookie tracking failed')
+    },
+  })
   if (!isInitialized || hasRespondedToCookies) return null
 
   return (
@@ -24,7 +41,10 @@ const CookieClient = ({ content }: CookieClientProps) => {
       footer={{
         primaryBtn: {
           label: content?.accept_btn_label || 'Accept',
-          onClick: acceptCookies,
+          onClick: () => {
+            trackCookieAcceptance() // ✅ backend tracking
+            acceptCookies() // ✅ local cookie
+          },
         },
         secondaryBtn: {
           label: content?.reject_btn_label || 'Deny',

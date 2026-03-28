@@ -8,6 +8,11 @@ const Footer = () => {
   return (
     <footer className="relative w-full overflow-hidden border-t border-slate-200 bg-slate-50 pt-24 pb-8">
       {/* Background Architectural Grid Lines */}
+      <div className="absolute inset-0 z-0 rotate-45 overflow-hidden blur-[250px]">
+        <div className="bg-cst-primary absolute top-0 -right-30 h-200 w-200 rounded-full"></div>
+        <div className="absolute top-50 -right-30 h-200 w-200 rounded-full bg-[#5A65FF]"></div>
+        <div className="bg-cst-secondary absolute -right-50 bottom-0 h-200 w-200 rounded-full"></div>
+      </div>
       <div
         className="pointer-events-none absolute inset-0 z-0 opacity-[0.03]"
         style={{
@@ -33,7 +38,7 @@ const Footer = () => {
             duration={800}
             className="flex md:col-span-12 lg:col-span-7"
           >
-            <div className="group relative flex h-full min-h-[400px] w-full flex-col justify-between overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-sm sm:p-12">
+            <div className="group relative flex h-full min-h-[400px] w-full flex-col justify-between overflow-hidden rounded-md bg-white p-8 sm:p-12">
               {/* Optional background image integration like KaizenLabs inside the brand box */}
               <div
                 className="absolute inset-0 z-0 opacity-[0.05] transition-transform duration-1000 group-hover:scale-105"
@@ -46,7 +51,13 @@ const Footer = () => {
                   href="/"
                   className="mb-6 inline-block text-4xl font-black tracking-widest text-slate-900 uppercase"
                 >
-                  COOPIOLET
+                  <Image
+                    src="/assets/logo.svg"
+                    alt="Cooppiolet Logo"
+                    width={48}
+                    height={48}
+                    className="inline-block h-auto w-80"
+                  />
                 </Link>
                 <p className="max-w-md font-sans text-lg leading-relaxed text-slate-600">
                   The all-in-one platform for cooperative management. Secure, powerful, and built
@@ -67,7 +78,7 @@ const Footer = () => {
           <div className="grid h-full grid-cols-1 gap-6 sm:grid-cols-2 md:col-span-12 lg:col-span-5">
             {/* Box 2: Menu Links */}
             <FadeContent blur delay={200} duration={800} className="flex w-full">
-              <div className="flex w-full flex-col rounded-[2.5rem] border border-slate-200 bg-white p-10 shadow-sm transition-all hover:border-teal-200 hover:shadow-md">
+              <div className="flex w-full flex-col rounded-md bg-white p-10 transition-all hover:border-teal-200">
                 <h4 className="mb-8 flex items-center gap-3 text-[12px] font-bold tracking-widest text-teal-600 uppercase">
                   <span className="h-px w-4 bg-teal-600"></span>
                   Menu
@@ -97,7 +108,7 @@ const Footer = () => {
 
             {/* Box 3: Legal Links */}
             <FadeContent blur delay={300} duration={800} className="flex w-full">
-              <div className="flex w-full flex-col rounded-[2.5rem] border border-slate-200 bg-white p-10 shadow-sm transition-all hover:border-blue-200 hover:shadow-md">
+              <div className="flex w-full flex-col rounded-md bg-white p-10 transition-all hover:border-blue-200">
                 <h4 className="mb-8 flex items-center gap-3 text-[12px] font-bold tracking-widest text-blue-600 uppercase">
                   <span className="h-px w-4 bg-blue-600"></span>
                   Legals
@@ -128,7 +139,7 @@ const Footer = () => {
 
           {/* Box 4: Copyright & Socials (Full Width Bottom Bar inside the Bento Grid) */}
           <FadeContent blur delay={400} duration={800} className="md:col-span-12">
-            <div className="flex w-full flex-col items-center justify-between rounded-full border border-slate-200 bg-white px-10 py-6 shadow-sm transition-all hover:shadow-md sm:flex-row">
+            <div className="flex w-full flex-col items-center justify-between rounded-md bg-white px-10 py-6 transition-all sm:flex-row">
               <span className="text-sm font-semibold text-slate-400">
                 © {new Date().getFullYear()} Cooppiolet. All rights reserved.
               </span>
@@ -166,7 +177,13 @@ const Footer = () => {
               'linear-gradient(to bottom, rgba(15, 23, 42, 0.08) 0%, rgba(15, 23, 42, 0.01) 100%)',
           }}
         >
-          COOPIOLET
+          <Image
+            src="/assets/logo.svg"
+            alt="Cooppiolet Logo"
+            width={48}
+            height={48}
+            className="inline-block h-auto w-[100vw] opacity-10"
+          />
         </h1>
       </div>
     </footer>

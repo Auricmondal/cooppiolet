@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_STRAPI_URL,
+  baseURL: `${process.env.NEXT_PUBLIC_STRAPI_URL}/api`,
 })
 
 export enum Method {
@@ -16,7 +16,10 @@ export async function strapiRequest<T>(
   method: Method = Method.GET,
   data?: unknown
 ): Promise<T> {
-  const token = process.env.STRAPI_READONLY_TOKEN
+  const token =
+    method === Method.POST || method === Method.PUT || method === Method.DELETE
+      ? process.env.STRAPI_UPDATE_TOKEN
+      : process.env.STRAPI_READONLY_TOKEN
 
   if (!token) throw new Error('Missing token')
 

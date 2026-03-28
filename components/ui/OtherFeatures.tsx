@@ -34,7 +34,7 @@ export const OtherFeatures = ({ data }: OtherFeaturesProps) => {
               className={`group flex w-full flex-col transition-all duration-500 ${
                 isDarkTheme
                   ? 'bg-transparent' // Transparent for dark themes as per screenshot
-                  : 'rounded-4xl bg-white p-8 shadow-[0_8px_40px_rgb(0,0,0,0.03)] ring-slate-900/4 hover:-translate-y-2 hover:shadow-[0_20px_60px_rgb(0,0,0,0.06)] hover:ring-slate-900/8 xl:p-10'
+                  : `rounded-2xl ${idx === 0 ? 'bg-green-300/80' : idx === 1 ? 'bg-purple-300/80' : 'bg-blue-300/80'} p-8 shadow-[0_8px_40px_rgb(0,0,0,0.03)] ring-slate-900/4 backdrop-blur-lg hover:-translate-y-2 hover:shadow-[0_20px_60px_rgb(0,0,0,0.06)] hover:ring-slate-900/8 xl:p-10`
               }`}
             >
               {/* Icon Block */}
@@ -76,9 +76,7 @@ export const OtherFeatures = ({ data }: OtherFeaturesProps) => {
                         strokeWidth={3}
                       />
                     </div>
-                    <span
-                      className={`text-[16px] leading-relaxed font-normal ${isDarkTheme ? 'text-white/80' : 'text-slate-600'}`}
-                    >
+                    <span className={`text-[16px] leading-relaxed font-normal text-black/70`}>
                       {item}
                     </span>
                   </li>

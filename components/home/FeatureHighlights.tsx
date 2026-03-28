@@ -285,8 +285,19 @@ const FeatureHighlights = () => {
         return (
           <section
             key={idx}
-            className={`w-full py-[160px] md:py-[180px] ${bgClass} ${data.type == 'Other' ? "bg-[url('/assets/hero.webp')]" : ''}`}
+            className={`w-full py-[160px] md:py-[180px] ${bgClass} ${data.type == 'Other' ? "bg-[url('/assets/hero.webp')]" : ''} relative`}
           >
+            {/* gradient */}
+            {data.type != 'Other' && (
+              <div
+                className="absolute inset-0 z-0 overflow-hidden blur-[250px]"
+                style={{ transform: `rotate(${idx * 15}deg)` }}
+              >
+                <div className="bg-cst-primary absolute top-0 -right-30 h-200 w-200 rounded-full"></div>
+                <div className="absolute top-50 -right-30 h-200 w-200 rounded-full bg-[#5A65FF]"></div>
+                <div className="bg-cst-secondary absolute -right-50 bottom-0 h-200 w-200 rounded-full"></div>
+              </div>
+            )}
             {/* Tactile Noise Texture Overlay */}
             <div
               className="pointer-events-none absolute inset-0 z-0 opacity-[0.03] mix-blend-overlay"

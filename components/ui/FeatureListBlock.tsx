@@ -27,11 +27,8 @@ interface FeatureListBlockProps {
 }
 
 export const FeatureListBlock = ({ data }: FeatureListBlockProps) => {
-  const isSecurity = data.theme === 'security-white'
-
   return (
     <div className="mt-16 w-full">
-      {/* Bento Grid Container */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:grid-rows-2">
         {/* Main Image Block (Asymmetric Bento Card) */}
         <FadeContent blur delay={300} duration={800} className="md:col-span-7 md:row-span-2">
@@ -73,7 +70,7 @@ export const FeatureListBlock = ({ data }: FeatureListBlockProps) => {
               <FadeContent key={idx} blur delay={500 + idx * 100} duration={600}>
                 <div
                   className={cn(
-                    'group flex h-full flex-col rounded-4xl p-6 transition-all duration-500',
+                    'group flex h-full flex-col rounded-2xl p-6 transition-all duration-500',
                     item.variant === 'dashed'
                       ? 'border border-dashed border-slate-300 bg-transparent'
                       : 'border border-black/2 bg-white shadow-[0_4px_15px_rgb(0,0,0,0.02)] hover:-translate-y-1 hover:shadow-[0_20px_40px_rgb(0,0,0,0.04)]'

@@ -1,4 +1,5 @@
 'use client'
+import { Button } from '@/components/ui/button'
 import React, { useState } from 'react'
 import Image from 'next/image'
 import { Check } from 'lucide-react'
@@ -46,29 +47,30 @@ export const ProductFeatureBlock = ({
 
             // Respecting exact custom classes user set manually for earlier instances
             if (theme === 'teal') {
-              activeClass = 'text-white'
-              inactiveClass = 'text-white hover:bg-white/10 backdrop-blur-sm'
+              activeClass = 'bg-cst-secondary/10 text-white'
+              inactiveClass = ' text-white hover:bg-white/10 '
             } else if (theme === 'purple') {
-              activeClass = 'bg-cst-neutral-02 text-[#111113]'
+              activeClass = 'bg-cst-neutral-02/10 text-[#111113]'
               inactiveClass = 'text-slate-700 hover:bg-cst-neutral-02'
             } else if (theme === 'light-pink') {
-              activeClass = 'bg-white text-slate-900 shadow-lg border border-black/5'
-              inactiveClass =
-                'bg-transparent text-slate-600 hover:bg-black/5 border border-transparent'
+              activeClass = 'bg-white/10 text-slate-900'
+              inactiveClass = 'bg-transparent text-slate-600 hover:bg-black/5 '
+            } else if (theme === 'forest') {
+              activeClass = 'bg-cst-green/10 text-white'
+              inactiveClass = 'text-white hover:bg-white/10 '
             } else {
-              // burgundy and forest (solid floating card patterns)
-              activeClass = 'bg-white text-slate-900 shadow-xl border border-white/20'
-              inactiveClass =
-                'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm border border-transparent'
+              activeClass = 'bg-cst-primary/30 text-white '
+              inactiveClass = 'text-white hover:bg-white/10 '
             }
 
             const containerPadding = 'px-6 py-5'
 
             return (
               <FadeContent key={idx} blur delay={400 + idx * 50} duration={600}>
-                <button
+                <Button
+                  variant="ghost"
                   onClick={() => setActiveDetailIndex(idx)}
-                  className={`group flex w-full flex-col items-start rounded-2xl text-left transition-all duration-300 ease-in-out ${containerPadding} ${
+                  className={`group flex h-auto w-full flex-col items-start rounded-2xl text-left whitespace-normal transition-all duration-300 ease-in-out hover:bg-transparent ${containerPadding} ${
                     isActive ? activeClass : inactiveClass
                   }`}
                 >
@@ -95,7 +97,7 @@ export const ProductFeatureBlock = ({
                     </div>
 
                     <span
-                      className={`text-[19px] font-[600] tracking-tight ${isActive ? (theme === 'teal' ? 'text-white' : 'text-slate-900') : ''}`}
+                      className={`text-[19px] font-semibold tracking-tight ${isActive ? (theme === 'teal' ? 'text-white' : 'text-slate-900') : ''} ${theme == 'burgundy' || theme === 'forest' ? 'text-white' : ''}`}
                     >
                       {detail.title}
                     </span>
@@ -105,12 +107,12 @@ export const ProductFeatureBlock = ({
                     className={`overflow-hidden transition-all duration-400 ease-in-out ${isActive ? 'mt-4 max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}
                   >
                     <p
-                      className={`pl-[3rem] text-[16px] leading-relaxed font-normal ${isActive ? (theme === 'teal' ? 'text-white/70' : 'text-slate-600') : ''}`}
+                      className={`pl-12 text-[16px] leading-relaxed font-normal ${isActive ? (theme === 'teal' ? 'text-white/70' : 'text-slate-600') : ''} ${theme == 'burgundy' || theme === 'forest' ? 'text-white/70' : ''}`}
                     >
                       {detail.description}
                     </p>
                   </div>
-                </button>
+                </Button>
               </FadeContent>
             )
           })}

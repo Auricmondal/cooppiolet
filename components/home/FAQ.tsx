@@ -1,4 +1,5 @@
 'use client'
+import { Button } from '@/components/ui/button'
 import React, { useState } from 'react'
 import { Plus, Minus } from 'lucide-react'
 import HeaderAnimation from '@/components/animations/HeaderAnimation'
@@ -64,14 +65,15 @@ const FAQ = () => {
                   className="w-full"
                 >
                   <div className="w-full border-b border-black/10 transition-colors duration-500 hover:bg-black/[0.02]">
-                    <button
+                    <Button
+                      variant="ghost"
+                      className="group flex h-auto w-full items-center justify-between py-12 text-left whitespace-normal hover:bg-transparent"
                       onClick={() => setOpenIndex(isOpen ? null : index)}
-                      className="group flex w-full items-center justify-between py-8 text-left"
                     >
-                      <span className="pr-8 font-sans text-xl font-medium tracking-tight text-slate-900 transition-transform duration-300 group-hover:translate-x-2 md:text-2xl">
+                      <span className="pr-8 font-sans text-xl font-medium tracking-tight text-slate-900 transition-transform duration-300 group-hover/button:translate-x-2 md:text-2xl">
                         {faq.question}
                       </span>
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-black/10 transition-all duration-500 group-hover:bg-slate-900 group-hover:text-white">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-black/10 transition-all duration-500 group-hover/button:bg-slate-900 group-hover/button:text-white">
                         {isOpen ? (
                           <Minus
                             className="rotate-180 transition-transform duration-500"
@@ -86,11 +88,12 @@ const FAQ = () => {
                           />
                         )}
                       </div>
-                    </button>
+                    </Button>
+
                     <div
                       className={`grid transition-all duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] ${isOpen ? 'mb-8 grid-rows-[1fr] opacity-100' : 'mb-0 grid-rows-[0fr] opacity-0'}`}
                     >
-                      <div className="overflow-hidden">
+                      <div className="overflow-hidden px-6">
                         <p className="max-w-[80%] text-lg leading-relaxed text-slate-500">
                           {faq.answer}
                         </p>

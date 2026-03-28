@@ -1,9 +1,14 @@
 'use client'
+import { Button } from '@/components/ui/button'
 import React from 'react'
 import HeaderAnimation from '@/components/animations/HeaderAnimation'
 import FadeContent from '@/components/animations/FadeContent'
+import { ModalContext, ModalType } from '@/context/ModalContext'
+import { useContext } from 'react'
 
 const CTA = () => {
+  const { openModal } = useContext(ModalContext)
+
   return (
     <section className="relative w-full overflow-hidden px-4 py-24 md:py-[200px]">
       {/* Full Section Background Image with Overlay */}
@@ -56,13 +61,18 @@ const CTA = () => {
           duration={800}
           className="flex w-full flex-col items-center justify-center gap-4 sm:w-auto sm:flex-row"
         >
-          <button className="group relative w-full overflow-hidden rounded-full bg-white px-10 py-5 text-lg font-bold text-slate-900 shadow-xl shadow-white/10 transition-all hover:scale-105 hover:shadow-2xl sm:w-auto">
-            <span className="relative z-10">Create a Free Account</span>
-            <div className="absolute inset-0 z-0 h-full w-full bg-gradient-to-r from-teal-100 to-white opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-          </button>
-          <button className="w-full rounded-full border border-white/30 bg-black/20 px-10 py-5 text-lg font-bold text-white shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-white/50 hover:bg-white/10 sm:w-auto">
+          <Button variant="white" size="lg" className="w-full sm:w-auto">
+            Create a Free Account
+          </Button>
+          <Button
+            variant="primary"
+            size="lg"
+            className="w-full sm:w-auto"
+            withDot
+            onClick={() => openModal(ModalType.FORM, null)}
+          >
             Request a Demo
-          </button>
+          </Button>
         </FadeContent>
 
         <FadeContent blur delay={500} duration={800}>
