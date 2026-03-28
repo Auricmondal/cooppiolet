@@ -1,7 +1,7 @@
 'use client'
-import React, { useCallback, useState, useMemo } from 'react'
+import React, { useCallback, useState, useMemo, useContext } from 'react'
 import Modal from './Modal'
-import { ModalType } from '@/context/ModalContext'
+import { ModalType, ModalContext } from '@/context/ModalContext'
 import { Input, Select, Textarea } from '@/components/ui/Input'
 
 enum STEPS {
@@ -11,6 +11,7 @@ enum STEPS {
 }
 
 const ContactModal = () => {
+  const { isModalOpen, modalType, closeModal } = useContext(ModalContext)
   const [step, setStep] = useState<STEPS>(STEPS.CONTACT)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -44,23 +45,26 @@ const ContactModal = () => {
           title: 'Contact Sales',
           description: defaultDesc,
           close: true,
+          closeAction: closeModal,
         }
       case STEPS.ABOUT:
         return {
           title: 'Could You Tell Us more about You?',
           description: defaultDesc,
           close: true,
+          closeAction: closeModal,
         }
       case STEPS.SCHEDULE:
         return {
           title: 'What time suit you the best?',
           description: defaultDesc,
           close: true,
+          closeAction: closeModal,
         }
       default:
-        return { title: 'Get Started', close: true }
+        return { title: 'Get Started', close: true, closeAction: closeModal }
     }
-  }, [step])
+  }, [step, closeModal])
 
   // Reusable input class for consistency
 
@@ -152,6 +156,8 @@ const ContactModal = () => {
       )}
     </div>
   )
+
+  if (!isModalOpen || modalType !== ModalType.FORM) return null
 
   return (
     <Modal

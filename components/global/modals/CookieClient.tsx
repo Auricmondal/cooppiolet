@@ -7,7 +7,10 @@ import { CookieClientProps } from '@/types/cookie'
 import { useUserTracking } from '@/context/CookieContext'
 
 const CookieClient = ({ content }: CookieClientProps) => {
-  const { acceptCookies } = useUserTracking()
+  const { isInitialized, hasRespondedToCookies, acceptCookies, denyCookies } = useUserTracking()
+
+  if (!isInitialized || hasRespondedToCookies) return null
+
   return (
     <Modal
       type={ModalType.COOKIE}
@@ -25,7 +28,7 @@ const CookieClient = ({ content }: CookieClientProps) => {
         },
         secondaryBtn: {
           label: content?.reject_btn_label || 'Deny',
-          onClick: () => {},
+          onClick: denyCookies,
         },
       }}
     >

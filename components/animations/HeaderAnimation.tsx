@@ -15,6 +15,7 @@ type BlurTextProps = {
   easing?: Easing | Easing[]
   onAnimationComplete?: () => void
   stepDuration?: number
+  wordStyles?: Record<string, string>
 }
 
 const buildKeyframes = (
@@ -43,6 +44,7 @@ const BlurText: React.FC<BlurTextProps> = ({
   easing = (t: number) => t,
   onAnimationComplete,
   stepDuration = 0.35,
+  wordStyles,
 }) => {
   const elements = animateBy === 'words' ? text.split(' ') : text.split('')
   const [inView, setInView] = useState(false)
@@ -93,7 +95,7 @@ const BlurText: React.FC<BlurTextProps> = ({
   )
 
   return (
-    <p ref={ref} className={`blur-text ${className} flex flex-wrap`}>
+    <p ref={ref} className={`blur-text font-serif ${className} flex flex-wrap`}>
       {elements.map((segment, index) => {
         const animateKeyframes = buildKeyframes(fromSnapshot, toSnapshots)
 
@@ -104,9 +106,17 @@ const BlurText: React.FC<BlurTextProps> = ({
           ease: easing,
         }
 
+        // If the segment is just a newline marker
+        const baseSegment = segment.replace(/[^a-zA-Z0-9]/g, '')
+        const extraClass =
+          (wordStyles && wordStyles[segment]) || (wordStyles && wordStyles[baseSegment])
+            ? wordStyles[segment] || wordStyles[baseSegment]
+            : ''
+
         return (
           <motion.span
             key={index}
+            className={extraClass}
             initial={fromSnapshot}
             animate={inView ? animateKeyframes : fromSnapshot}
             transition={spanTransition}

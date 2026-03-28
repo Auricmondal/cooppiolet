@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono, Inter } from 'next/font/google'
+import { Geist, Geist_Mono, Plus_Jakarta_Sans, Playfair_Display } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/global/Navbar'
 import Footer from '@/components/global/Footer'
@@ -12,7 +12,8 @@ import Cookie from '@/components/global/modals/Cookie'
 import Newsletter from '@/components/global/modals/Newsletter'
 import ContactModal from '@/components/global/modals/ContactModal'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
+const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-sans' })
+const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-serif' })
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -43,7 +44,8 @@ export default function RootLayout({
         geistSans.variable,
         geistMono.variable,
         'font-sans',
-        inter.variable
+        jakarta.variable,
+        playfair.variable
       )}
     >
       <body className="flex min-h-full flex-col">
@@ -53,7 +55,7 @@ export default function RootLayout({
           <Toaster />
           <Cookie />
           <ContactModal />
-          {/* <Newsletter /> */}
+          <Newsletter />
 
           <NavbarProvider>
             <Navbar />

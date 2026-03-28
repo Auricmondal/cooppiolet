@@ -24,23 +24,27 @@ interface CookieState {
   isInitialized: boolean
   anonymousId: string | null
   hasAcceptedCookies: boolean
+  hasRespondedToCookies: boolean
   isSubscribed: boolean
 }
 
 interface CookieContextProps extends CookieState {
   acceptCookies: () => void
+  denyCookies: () => void
   setSubscriptionStatus: (status: boolean) => void
 }
 
 type Action =
   | { type: 'HYDRATE'; payload: Partial<CookieState> }
   | { type: 'ACCEPT_COOKIES' }
+  | { type: 'DENY_COOKIES' }
   | { type: 'SET_SUBSCRIPTION'; payload: boolean }
 
 const initialState: CookieState = {
   isInitialized: false,
   anonymousId: null,
   hasAcceptedCookies: false,
+  hasRespondedToCookies: false,
   isSubscribed: false,
 }
 
@@ -49,7 +53,9 @@ const cookieReducer = (state: CookieState, action: Action): CookieState => {
     case 'HYDRATE':
       return { ...state, ...action.payload, isInitialized: true }
     case 'ACCEPT_COOKIES':
-      return { ...state, hasAcceptedCookies: true }
+      return { ...state, hasAcceptedCookies: true, hasRespondedToCookies: true }
+    case 'DENY_COOKIES':
+      return { ...state, hasRespondedToCookies: true }
     case 'SET_SUBSCRIPTION':
       return { ...state, isSubscribed: action.payload }
     default:
@@ -73,6 +79,7 @@ export const CookieProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     const accepted = getCookie('cookie_accepted') === 'true'
+    const responded = getCookie('cookie_responded') === 'true' || accepted
     const subscribed = getCookie('newsletter_subscribed') === 'true'
 
     // 2. Fire a single, clean dispatch action. No setState loops here.
@@ -81,6 +88,7 @@ export const CookieProvider = ({ children }: { children: React.ReactNode }) => {
       payload: {
         anonymousId: currentId,
         hasAcceptedCookies: accepted,
+        hasRespondedToCookies: responded,
         isSubscribed: subscribed,
       },
     })
@@ -89,7 +97,13 @@ export const CookieProvider = ({ children }: { children: React.ReactNode }) => {
   // --- Actions ---
   const acceptCookies = () => {
     setCookie('cookie_accepted', 'true')
+    setCookie('cookie_responded', 'true')
     dispatch({ type: 'ACCEPT_COOKIES' })
+  }
+
+  const denyCookies = () => {
+    setCookie('cookie_responded', 'true')
+    dispatch({ type: 'DENY_COOKIES' })
   }
 
   const setSubscriptionStatus = (status: boolean) => {
@@ -102,6 +116,7 @@ export const CookieProvider = ({ children }: { children: React.ReactNode }) => {
     () => ({
       ...state,
       acceptCookies,
+      denyCookies,
       setSubscriptionStatus,
     }),
     [state]

@@ -2,6 +2,7 @@
 import FadeContent from '@/components/animations/FadeContent'
 import { ElementRotation, TextHover } from '@/components/animations/TextHover'
 import { NavbarContext } from '@/context/NavbarContext'
+import { ModalContext, ModalType } from '@/context/ModalContext'
 import gsap from 'gsap'
 import { ArrowUpRight, Mail, X } from 'lucide-react'
 import Image from 'next/image'
@@ -56,6 +57,7 @@ const MenuButton = () => {
 
 const MenuDrawer = () => {
   const { isNavbarOpen, navbarContent, toggleDrawer } = useContext(NavbarContext)
+  const { openModal } = useContext(ModalContext)
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -144,23 +146,45 @@ const MenuDrawer = () => {
       <div className="flex h-full flex-1 flex-col overflow-y-auto px-6 pt-4 pb-8">
         {/* Top Section: Navigation Links */}
         <div className="flex flex-1 flex-col justify-center gap-2">
-          {navbarContent?.Links.map((item, index) => (
-            <div key={index} className="drawer-link invisible opacity-0">
-              <Link
-                href={item.href === 'home' ? '/' : item.href}
-                onClick={toggleDrawer}
-                aria-label={item.label}
-                // Added a group hover effect for an arrow, and a bottom border for structure
-                className={`group flex items-center justify-between border-b border-gray-200 py-4 text-5xl font-black tracking-tight md:text-6xl ${item.isPrimary ? 'text-cst-primary' : 'text-gray-900'} ${item.is_cta ? 'hover:text-cst-secondary rounded-3xl bg-black px-8 text-white shadow-md' : 'hover:text-cst-primary'} transition-colors`}
-              >
-                <TextHover label={item.label} />
-                <ArrowUpRight
-                  className="-translate-x-4 opacity-0 transition-all duration-300 ease-out group-hover:translate-x-0 group-hover:opacity-100"
-                  size={32}
-                />
-              </Link>
-            </div>
-          ))}
+          {navbarContent?.Links.map((item, index) => {
+            const isContact =
+              item.label.toLowerCase() === 'contact' || item.href.toLowerCase() === 'contact'
+            const className = `group flex w-full items-center justify-between border-b border-gray-200 py-4 text-left text-5xl font-black tracking-tight md:text-6xl ${item.isPrimary ? 'text-cst-primary' : 'text-gray-900'} ${item.is_cta ? 'hover:text-cst-secondary rounded-3xl bg-black px-8 text-white shadow-md' : 'hover:text-cst-primary'} transition-colors`
+
+            return (
+              <div key={index} className="drawer-link invisible opacity-0">
+                {isContact ? (
+                  <button
+                    onClick={() => {
+                      toggleDrawer()
+                      openModal(ModalType.FORM, null)
+                    }}
+                    aria-label={item.label}
+                    className={className}
+                  >
+                    <TextHover label={item.label} />
+                    <ArrowUpRight
+                      className="-translate-x-4 opacity-0 transition-all duration-300 ease-out group-hover:translate-x-0 group-hover:opacity-100"
+                      size={32}
+                    />
+                  </button>
+                ) : (
+                  <Link
+                    href={item.href === 'home' ? '/' : item.href}
+                    onClick={toggleDrawer}
+                    aria-label={item.label}
+                    className={className}
+                  >
+                    <TextHover label={item.label} />
+                    <ArrowUpRight
+                      className="-translate-x-4 opacity-0 transition-all duration-300 ease-out group-hover:translate-x-0 group-hover:opacity-100"
+                      size={32}
+                    />
+                  </Link>
+                )}
+              </div>
+            )
+          })}
         </div>
 
         {/* Bottom Section: Modern Artifacts / Bento Boxes */}
