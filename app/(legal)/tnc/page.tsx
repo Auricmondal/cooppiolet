@@ -1,4 +1,3 @@
-import LegalContent from '@/components/global/LegalContent'
 import PrimaryWrapper from '@/components/Wrapper/PrimaryWrapper'
 import { Method, strapiRequest } from '@/lib/api'
 import { Legal } from '@/types/legal'
@@ -10,8 +9,11 @@ interface Data {
   }
 }
 const page = async () => {
-  const legalData: Data = await strapiRequest('/terms-and-condition?populate=*', Method.GET)
-  const tnc: Legal = legalData.data.Legal
+  const legalData: Data = await strapiRequest(
+    '/terms-and-condition?populate=*&locale=en',
+    Method.GET
+  )
+
   return (
     <PrimaryWrapper>
       <TermClient initialData={legalData} />

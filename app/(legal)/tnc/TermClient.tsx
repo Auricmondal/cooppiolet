@@ -1,19 +1,21 @@
 'use client'
 
-import React from 'react'
+import React, { useContext } from 'react'
 import LegalContent from '@/components/global/LegalContent'
 import { useQuery } from '@tanstack/react-query'
 import PrimaryWrapper from '@/components/Wrapper/PrimaryWrapper'
 import { Skeleton } from '@/components/ui/skeleton'
 import axios from 'axios'
+import { LanguageContext } from '@/context/LanguageContext'
 
 const TermClient = ({ initialData }: { initialData: any }) => {
+  const { lang } = useContext(LanguageContext)
   const { data, isError, error, isLoading } = useQuery({
-    queryKey: ['term'],
-    initialData,
+    queryKey: ['term', lang.code],
+    initialData: lang.code === 'en' ? initialData : undefined,
     queryFn: async () => {
-      const res = await axios.get(`/api/term`)
-      return res
+      const res = await axios.get(`/api/term?lang=${lang.code}`)
+      return res.data
     },
     staleTime: Infinity, // Prevents unnecessary background refetches for static content
   })

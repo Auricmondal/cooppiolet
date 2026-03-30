@@ -1,10 +1,12 @@
 import axios from 'axios'
 import { NextResponse } from 'next/server'
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url)
+    const lang = searchParams.get('lang') || 'en'
     const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/terms-and-condition?populate=*`,
+      `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/terms-and-condition?locale=${lang}&populate=*`,
       {
         headers: {
           Authorization: `Bearer ${process.env.STRAPI_READONLY_TOKEN}`,
@@ -12,7 +14,7 @@ export async function GET() {
       }
     )
 
-    return NextResponse.json(res.data.data)
+    return NextResponse.json(res.data)
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 })
   }

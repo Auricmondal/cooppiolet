@@ -3,6 +3,8 @@ import LinkTag from '@/components/ui/LinkTag'
 import { Button } from '@/components/ui/button'
 import { NavbarContext } from '@/context/NavbarContext'
 import { ModalContext, ModalType } from '@/context/ModalContext'
+import { LanguageContext } from '@/context/LanguageContext'
+import { Globe } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useContext } from 'react'
@@ -56,6 +58,7 @@ const NavItem = ({ item }: { item: any }) => {
 const DesktopNavbar = () => {
   const { navbarContent } = useContext(NavbarContext)
   const { openModal } = useContext(ModalContext)
+  const { lang, toggleLang } = useContext(LanguageContext)
 
   return (
     <div className="hidden w-full items-center justify-between px-4 py-4 transition-all duration-300 lg:flex">
@@ -75,6 +78,14 @@ const DesktopNavbar = () => {
       </div>
 
       <div className="flex items-center justify-center gap-6">
+        <Button
+          variant="ghost"
+          onClick={toggleLang}
+          className="text-cst-neutral-08 hover:text-cst-primary flex items-center gap-1.5 px-3 py-1 font-medium uppercase"
+        >
+          <Globe size={16} />
+          {lang.code}
+        </Button>
         {navbarContent?.Links.map((item, index) => (
           <NavItem key={item.id || index} item={item} />
         ))}

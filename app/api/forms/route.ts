@@ -9,7 +9,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json(response)
   } catch (error: any) {
-    console.error('Error submitting form:', error.response?.data || error.message)
     return NextResponse.json(
       { error: error.response?.data?.error?.message || 'Failed to submit form' },
       { status: error.response?.status || 500 }
@@ -17,13 +16,18 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     try {
-      const strapiContent: any = await strapiRequest('/form-content?populate=*', Method.GET)
+      const { searchParams } = new URL(request.url)
+      const lang = searchParams.get('lang') || 'en'
+      const strapiContent: any = await strapiRequest(
+        `/form-content?locale=${lang}&populate=*`,
+        Method.GET
+      )
 
       return NextResponse.json(strapiContent.data)
-    } catch (err) {
+    } catch (_err) {
       // Fallback if Strapi content isn't set up yet
       return NextResponse.json({
         steps: [

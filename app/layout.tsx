@@ -59,10 +59,8 @@ export default function RootLayout({
             <ContactModal />
             <Newsletter />
 
-            <NavbarProvider>
-              <Navbar />
-              <MenuDrawer />
-            </NavbarProvider>
+            <Navbar />
+            <MenuDrawer />
             {children}
             <Footer />
           </GlobalProviderWrapper>

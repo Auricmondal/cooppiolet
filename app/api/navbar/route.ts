@@ -6,8 +6,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const lang = searchParams.get('lang') || 'en'
-
-    const res: any = await strapiRequest(`/cookie-content?locale=${lang}&populate=*`, Method.GET)
+    const res: any = await strapiRequest(`/navbar?locale=${lang}&populate=*`, Method.GET)
 
     return NextResponse.json(res.data)
   } catch (err: any) {
@@ -19,7 +18,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
 
-    const response = await strapiRequest('/cookie-consents', Method.POST, body)
+    const response = await strapiRequest('/newsletters', Method.POST, body)
     return NextResponse.json(response)
   } catch (error: any) {
     return NextResponse.json(

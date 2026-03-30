@@ -1,12 +1,13 @@
 import { Method, strapiRequest } from '@/lib/api'
-import axios from 'axios'
 import { NextResponse } from 'next/server'
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const res: any = await strapiRequest('/newsletter-modal', Method.GET)
+    const { searchParams } = new URL(request.url)
+    const lang = searchParams.get('lang') || 'en'
+    const res: any = await strapiRequest(`/newsletter-modal?locale=${lang}&populate=*`, Method.GET)
 
-    return NextResponse.json(res.data.data)
+    return NextResponse.json(res.data)
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 })
   }

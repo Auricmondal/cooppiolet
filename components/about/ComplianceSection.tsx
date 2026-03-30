@@ -7,76 +7,28 @@ import Image from 'next/image'
 import { Skeleton } from '../ui/skeleton'
 import axios from 'axios'
 import { useQuery } from '@tanstack/react-query'
-import { Overview, OverviewCard } from '@/types/about'
+import { LanguageContext } from '@/context/LanguageContext'
+import { Overview, OverviewCard, AboutResponse } from '@/types/about'
 import { StrapiRichTextRenderer } from '../global/RichTextRenderer'
 import { ImageData } from '@/types/home'
 
-const items = [
-  {
-    title: 'Made & Hosted in Germany',
-    body: `All Coop-Pilot infrastructure is physically hosted in data centers located within the Federal Republic of Germany. We do not use any non-German cloud providers for primary storage or processing. Our primary data center infrastructure is located in Frankfurt am Main, with geographically redundant failover in Hamburg.
-
-This means that your member data — including personal identification records, financial contribution histories, and governance documents — never crosses into foreign legal jurisdictions. This is particularly relevant given the extra-territorial reach of legal instruments like the US CLOUD Act, which can compel US-headquartered cloud providers to disclose data stored on their servers regardless of where that data physically resides.
-
-CoopGo is a German GmbH, incorporated under German law. Our terms of service, privacy policy, and data processing agreements are governed by German law and subject to German courts.`,
-  },
-  {
-    title: 'DSGVO & Datenschutz (Data Protection Compliance)',
-    body: `Coop-Pilot is built from the architectural level to comply with the European General Data Protection Regulation (GDPR) as implemented in Germany through the Bundesdatenschutzgesetz (BDSG neue Fassung).
-
-Key compliance measures include: explicit purpose limitation (data collected for member management is not processed for any other purpose), data minimization (we only collect what is legally required and functionally necessary), automated deletion pipelines (members removed from your register have their personal data purged after configurable retention windows that comply with German storage obligations), a full right-to-access workflow (administrators can generate DSGVO Article 15 data export reports with a single click), and a documented data breach response protocol that meets the 72-hour notification requirement to the relevant supervisory authority (Datenschutzbehörde).
-
-We maintain a formal Verarbeitungsverzeichnis (Record of Processing Activities) for each customer deployment, and our Data Processing Agreement (Auftragsverarbeitungsvertrag / AVV) meets the requirements of GDPR Article 28.`,
-  },
-  {
-    title: 'Encryption Standards & Technical Security',
-    body: `All data stored within Coop-Pilot is encrypted at rest using AES-256, the same standard employed by German banking infrastructure. Data transmitted between your administrators' browsers and our servers is protected by TLS 1.3, with HSTS enforced sitewide and certificate transparency monitoring active.
-
-Access to member data within the platform is governed by role-based access control (RBAC). Cooperative boards can define granular permissions — for example, allowing a membership coordinator to manage Beitrittserklärungen while restricting their access to financial records. Every access event is written to an immutable audit log with cryptographic hashing (SHA-256), ensuring that log entries cannot be retroactively modified.
-
-We conduct annual third-party penetration testing and vulnerability assessments. Findings are triaged within 48 hours and remediated according to a severity-based SLA. Our security architecture documentation is available for review as part of our enterprise due diligence package.`,
-  },
-  {
-    title: 'Genossenschaftsgesetz (GenG) Compliance Engine',
-    body: `German cooperative law — codified in the Genossenschaftsgesetz (GenG) — imposes specific requirements on how member records must be maintained, how share capital changes must be documented, and how general assemblies (Generalversammlungen) must be conducted and reported.
-
-Coop-Pilot's compliance engine is updated in parallel with legislative changes. When the 2022 GenG amendments introduced new requirements for digital member applications (Beitrittserklärungen), Coop-Pilot had a compliant workflow available within the update cycle that followed the legislative effective date. When the 2025 ESPR-linked reporting obligations were introduced, we published both a compliance guide for our customers and a product update implementing the new reporting templates.
-
-The compliance engine provides real-time flagging when a record or process enters a state that would be non-compliant under current GenG requirements — for example, if a pending membership application has exceeded the legal response window, or if a share register entry is missing mandatory documentation. These flags are visible to administrators as actionable tasks, not buried in reports.`,
-  },
-  {
-    title: 'GoBD-Konformität & Buchführung',
-    body: `The GoBD (Grundsätze zur ordnungsmäßigen Führung und Aufbewahrung von Büchern, Aufzeichnungen und Unterlagen in elektronischer Form) sets the German tax authority's requirements for electronic bookkeeping. Any software used to manage financial records that may be relevant to a tax audit must comply with GoBD.
-
-Coop-Pilot's financial record module — covering member share contributions, entrance fees (Eintrittsgeld), and distributions — is designed to meet GoBD requirements. Records are write-once (post-creation modifications create versioned entries, not overwrites), retention windows are enforced (10-year mandatory retention for financial records), and exports can be generated in the formats required for submission to a DATEV-compatible accounting practice.
-
-Our GoBD compliance statement is available as a formal document for cooperatives that require it for their own auditing process or as part of their Prüfungsbericht with their regional Prüfungsverband.`,
-  },
-  {
-    title: 'Audit & Prüfungsverband Readiness',
-    body: `Every registered German cooperative must undergo a periodic statutory audit conducted by a recognized Prüfungsverband. The audit assesses legal compliance, financial integrity, and the adequacy of the cooperative's administrative processes. A poor audit outcome — or worse, a qualified audit opinion — can have significant consequences for a cooperative's standing and operations.
-
-Coop-Pilot is designed to make your Prüfung as straightforward as possible. The platform can generate a structured Prüfungsmappe — a compilation of member records, share register documentation, Generalversammlungs-Protokolle, and financial summaries — formatted to the expected structure of the major German Prüfungsverbände.
-
-We work directly with auditor associations to ensure that Coop-Pilot exports match the record formats that auditors actually use. This means less time spent on manual preparation and significantly lower risk of documentation gaps that could trigger follow-up requests.`,
-  },
-]
-
-const ComplianceSection = () => {
+const ComplianceSection = ({ initialData }: { initialData?: AboutResponse }) => {
   const [openIndex, setOpenIndex] = useState<number | null>(0)
   const itemRefs = useRef<(HTMLDivElement | null)[]>([])
+  const { lang } = React.useContext(LanguageContext)
 
   const { data, isLoading } = useQuery({
-    queryKey: ['about'],
+    queryKey: ['about', lang.code],
+    initialData: lang.code === 'en' ? initialData : undefined,
     queryFn: async () => {
-      const res = await axios.get('/api/about')
+      const res = await axios.get(`/api/about?lang=${lang.code}`)
       return res.data
     },
   })
 
   if (isLoading) {
     return (
-      <section className="relative flex min-h-[100vh] flex-col items-center justify-start overflow-hidden px-6 pt-32 pb-48 lg:min-h-screen lg:pt-40">
+      <section className="relative flex min-h-screen flex-col items-center justify-start overflow-hidden px-6 pt-32 pb-48 lg:min-h-screen lg:pt-40">
         <div className="relative z-30 flex w-full max-w-[1200px] flex-col items-center px-4">
           <Skeleton className="mb-6 h-32 w-full max-w-4xl" />
           <Skeleton className="mb-10 h-12 w-full max-w-xl" />

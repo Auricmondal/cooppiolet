@@ -4,6 +4,8 @@ import React, { useState } from 'react'
 import { Plus, Minus } from 'lucide-react'
 import HeaderAnimation from '@/components/animations/HeaderAnimation'
 import FadeContent from '@/components/animations/FadeContent'
+import { LanguageContext } from '@/context/LanguageContext'
+import { useContext } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { HomeResponse } from '@/types/home'
@@ -11,11 +13,14 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { StrapiRichTextRenderer } from '../global/RichTextRenderer'
 import { Node } from '@/types/strapiRichText'
 
-const FAQ = () => {
+const FAQ = ({ initialData }: { initialData?: HomeResponse }) => {
+  const { lang } = useContext(LanguageContext)
+
   const { data, isLoading } = useQuery<HomeResponse>({
-    queryKey: ['home'],
+    queryKey: ['home', lang.code],
+    initialData: lang.code === 'en' ? initialData : undefined,
     queryFn: async () => {
-      const res = await axios.get('/api/home')
+      const res = await axios.get(`/api/home?lang=${lang.code}`)
       return res.data
     },
   })

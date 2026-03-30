@@ -4,15 +4,20 @@ import Image from 'next/image'
 import InteractiveTabs from '@/components/ui/InteractiveTabs'
 import HeaderAnimation from '@/components/animations/HeaderAnimation'
 import { useQuery } from '@tanstack/react-query'
+import { LanguageContext } from '@/context/LanguageContext'
+import { useContext } from 'react'
 import axios from 'axios'
 import { HomeResponse } from '@/types/home'
 import { Skeleton } from '@/components/ui/skeleton'
 
-const Solutions = () => {
+const Solutions = ({ initialData }: { initialData?: HomeResponse }) => {
+  const { lang } = useContext(LanguageContext)
+
   const { data, isLoading } = useQuery<HomeResponse>({
-    queryKey: ['home'],
+    queryKey: ['home', lang.code],
+    initialData: lang.code === 'en' ? initialData : undefined,
     queryFn: async () => {
-      const res = await axios.get('/api/home')
+      const res = await axios.get(`/api/home?lang=${lang.code}`)
       return res.data
     },
   })

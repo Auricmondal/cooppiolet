@@ -2,29 +2,34 @@
 
 import FadeContent from '@/components/animations/FadeContent'
 import Image from 'next/image'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useContext } from 'react'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
 import { Skeleton } from '../ui/skeleton'
+import { H2 } from '../global/Typography'
+import { LanguageContext } from '@/context/LanguageContext'
 import axios from 'axios'
 import { useQuery } from '@tanstack/react-query'
 import { StrapiRichTextRenderer } from '../global/RichTextRenderer'
-import { AboutCooppiolet } from '@/types/about'
+import type { AboutCooppiolet, AboutResponse } from '@/types/about'
 
 // Register ScrollTrigger for Next.js environments
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
 }
 
-const StorySection = () => {
+const StorySection = ({ initialData }: { initialData?: AboutResponse }) => {
   const sectionRef = useRef<HTMLDivElement>(null)
   const text1Ref = useRef<HTMLHeadingElement>(null)
   const text2Ref = useRef<HTMLHeadingElement>(null)
 
+  const { lang } = useContext(LanguageContext)
+
   const { data, isLoading } = useQuery({
-    queryKey: ['about'],
+    queryKey: ['about', lang.code],
+    initialData: lang.code === 'en' ? initialData : undefined,
     queryFn: async () => {
-      const res = await axios.get('/api/about')
+      const res = await axios.get(`/api/about?lang=${lang.code}`)
       return res.data
     },
   })
@@ -127,7 +132,7 @@ const StorySection = () => {
   // 4. EARLY RETURN MUST HAPPEN HERE, AFTER ALL HOOKS
   if (isLoading) {
     return (
-      <section className="relative flex min-h-[100vh] flex-col items-center justify-start overflow-hidden px-6 pt-32 pb-48 lg:min-h-screen lg:pt-40">
+      <section className="relative flex min-h-screen flex-col items-center justify-start overflow-hidden px-6 pt-32 pb-48 lg:min-h-screen lg:pt-40">
         <div className="relative z-30 flex w-full max-w-[1200px] flex-col items-center px-4 text-center">
           <Skeleton className="mb-6 h-6 w-full max-w-4xl" />
         </div>

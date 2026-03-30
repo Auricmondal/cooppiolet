@@ -14,7 +14,7 @@ export const NavbarContext = createContext<NavbarContextType>({
   isNavbarOpen: false,
   navbarContent: null,
   toggleDrawer: () => {},
-  populateNavbarContent: (content: Navbar | null) => {},
+  populateNavbarContent: (_content: Navbar | null) => {},
 })
 
 const NavbarProvider = ({ children }: { children: React.ReactNode }) => {
@@ -25,7 +25,7 @@ const NavbarProvider = ({ children }: { children: React.ReactNode }) => {
     (content: Navbar | null) => {
       setNavbarContent(content)
     },
-    [navbarContent]
+    [] // no deps needed — setNavbarContent is stable
   )
 
   const toggleDrawer = useCallback(() => {
@@ -39,7 +39,7 @@ const NavbarProvider = ({ children }: { children: React.ReactNode }) => {
       toggleDrawer,
       populateNavbarContent,
     }),
-    [isNavbarOpen, navbarContent, toggleDrawer]
+    [isNavbarOpen, navbarContent, toggleDrawer, populateNavbarContent]
   )
 
   return <NavbarContext.Provider value={value}>{children}</NavbarContext.Provider>

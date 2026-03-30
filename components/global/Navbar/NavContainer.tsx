@@ -10,6 +10,7 @@ import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { toast } from 'sonner'
 import { Skeleton } from '@/components/ui/skeleton'
+import { LanguageContext } from '@/context/LanguageContext'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -32,11 +33,12 @@ const NavContainer = ({ content }: { content: Navbar }) => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  const { lang } = useContext(LanguageContext)
   const { data, isError, error, isLoading, isFetching } = useQuery({
-    queryKey: ['navbar'],
-    initialData: content,
+    queryKey: ['navbar', lang.code],
+    initialData: lang.code === 'en' ? content : undefined,
     queryFn: async () => {
-      const res = await axios.get(`/api/navbar`)
+      const res = await axios.get(`/api/navbar?lang=${lang.code}`)
       return res.data
     },
     staleTime: Infinity,
@@ -102,7 +104,7 @@ const NavContainer = ({ content }: { content: Navbar }) => {
   return (
     <>
       {isFetching && (
-        <div className="fixed top-0 left-0 z-[60] h-[2px] w-full animate-pulse bg-black/10" />
+        <div className="fixed top-0 left-0 z-60 h-[2px] w-full animate-pulse bg-black/10" />
       )}
 
       <nav

@@ -1,10 +1,10 @@
 'use client'
-import React, { useEffect, useMemo } from 'react'
+
 import Image from 'next/image'
 import * as LucideIcons from 'lucide-react'
 import FadeContent from '@/components/animations/FadeContent'
 import { cn } from '@/lib/utils'
-import { Badge, ComingSoonItem, ImageData, SecurityItem } from '@/types/home'
+import { ComingSoonItem, ImageData, SecurityItem } from '@/types/home'
 
 interface FeatureListBlockProps {
   data: {

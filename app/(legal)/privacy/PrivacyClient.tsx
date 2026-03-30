@@ -6,14 +6,17 @@ import { useQuery } from '@tanstack/react-query'
 import PrimaryWrapper from '@/components/Wrapper/PrimaryWrapper'
 import { Skeleton } from '@/components/ui/skeleton'
 import axios from 'axios'
+import { LanguageContext } from '@/context/LanguageContext'
+import { useContext } from 'react'
 
 const PrivacyClient = ({ initialData }: { initialData: any }) => {
+  const { lang } = useContext(LanguageContext)
   const { data, isError, error, isLoading } = useQuery({
-    queryKey: ['privacy-policy'],
-    initialData,
+    queryKey: ['privacy-policy', lang.code],
+    initialData: lang.code === 'en' ? initialData : undefined,
     queryFn: async () => {
-      const res = await axios.get(`api/privacy`)
-      return res
+      const res = await axios.get(`/api/privacy?lang=${lang.code}`)
+      return res.data
     },
     staleTime: Infinity,
   })

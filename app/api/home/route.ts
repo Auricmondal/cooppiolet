@@ -3,10 +3,14 @@ import { strapiRequest } from '@/lib/api'
 import qs from 'qs'
 import { HomeResponse } from '@/types/home'
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url)
+    const lang = searchParams.get('lang') || 'en'
+
     const query = qs.stringify(
       {
+        locale: lang,
         populate: {
           hero: { populate: '*' },
           partners: { populate: '*' },
@@ -47,7 +51,6 @@ export async function GET() {
 
     return NextResponse.json(response)
   } catch (error) {
-    console.error('Error fetching home data:', error)
     return NextResponse.json({ error: 'Failed to fetch home data' }, { status: 500 })
   }
 }

@@ -3,14 +3,19 @@ import React from 'react'
 import Image from 'next/image'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
+import { LanguageContext } from '@/context/LanguageContext'
+import { useContext } from 'react'
 import { HomeResponse } from '@/types/home'
 import { Skeleton } from '@/components/ui/skeleton'
 
-const Logos = () => {
+const Logos = ({ initialData }: { initialData?: HomeResponse }) => {
+  const { lang } = useContext(LanguageContext)
+
   const { data, isLoading } = useQuery<HomeResponse>({
-    queryKey: ['home'],
+    queryKey: ['home', lang.code],
+    initialData: lang.code === 'en' ? initialData : undefined,
     queryFn: async () => {
-      const res = await axios.get('/api/home')
+      const res = await axios.get(`/api/home?lang=${lang.code}`)
       return res.data
     },
   })

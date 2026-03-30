@@ -9,30 +9,33 @@ import { ArrowUpRight } from 'lucide-react'
 import Image from 'next/image'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
+import { LanguageContext } from '@/context/LanguageContext'
 import { Skeleton } from '../ui/skeleton'
-import type { AboutHero } from '@/types/about'
+import type { AboutHero, AboutResponse } from '@/types/about'
 
-const AboutHero = () => {
+const AboutHero = ({ initialData }: { initialData?: AboutResponse }) => {
   const { openModal } = useContext(ModalContext)
+  const { lang } = useContext(LanguageContext)
 
   const { data, isLoading } = useQuery({
-    queryKey: ['about'],
+    queryKey: ['about', lang.code],
+    initialData: lang.code === 'en' ? initialData : undefined,
     queryFn: async () => {
-      const res = await axios.get('/api/about')
+      const res = await axios.get(`/api/about?lang=${lang.code}`)
       return res.data
     },
   })
 
   if (isLoading) {
     return (
-      <section className="relative flex min-h-[100vh] flex-col items-center justify-start overflow-hidden pt-32 pb-48 lg:min-h-screen lg:pt-40">
+      <section className="relative flex min-h-screen flex-col items-center justify-start overflow-hidden pt-32 pb-48 lg:min-h-screen lg:pt-40">
         <div className="relative z-30 flex w-full max-w-[1200px] flex-col items-center px-4 text-center">
           <Skeleton className="mb-6 h-32 w-full max-w-4xl" />
           <Skeleton className="mb-10 h-12 w-full max-w-xl" />
           <Skeleton className="h-14 w-44 rounded-full" />
         </div>
         <div className="z-20 mt-20 w-full max-w-[1000px] px-8">
-          <Skeleton className="aspect-[16/9] w-full rounded-[2rem]" />
+          <Skeleton className="aspect-video w-full rounded-4xl" />
         </div>
       </section>
     )
@@ -92,7 +95,7 @@ const AboutHero = () => {
               blur
               delay={400}
               duration={1200}
-              className="absolute top-[10%] right-[10%] h-[400px] w-[320px] overflow-hidden rounded-[2rem] shadow-2xl"
+              className="absolute top-[10%] right-[10%] h-[400px] w-[320px] overflow-hidden rounded-4xl shadow-2xl"
             >
               <Image
                 src={`${process.env.NEXT_PUBLIC_STRAPI_URL}${heroData.images[1].url}`}
@@ -115,7 +118,7 @@ const AboutHero = () => {
                 alt={heroData.images[0].alternativeText || 'Dashboard'}
                 width={100}
                 height={100}
-                className="h-full w-full object-cover object-left-top"
+                className="h-full w-full object-cover object-top-left"
               />
             </FadeContent>
 
@@ -124,7 +127,7 @@ const AboutHero = () => {
               blur
               delay={800}
               duration={1000}
-              className="bg-cst-primary absolute top-[5%] left-[15%] z-10 flex h-32 w-32 rotate-6 flex-col items-center justify-center rounded-[1.5rem] text-white shadow-lg"
+              className="bg-cst-primary absolute top-[5%] left-[15%] z-10 flex h-32 w-32 rotate-6 flex-col items-center justify-center rounded-3xl text-white shadow-lg"
             >
               <p className="font-serif text-4xl font-normal">{heroData.artifact_percentage}</p>
               <p className="text-[10px] font-bold tracking-widest uppercase">

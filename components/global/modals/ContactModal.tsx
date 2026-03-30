@@ -3,6 +3,7 @@ import React, { useState, useMemo, useContext } from 'react'
 import { cn } from '@/lib/utils'
 import Modal from './Modal'
 import { ModalType, ModalContext } from '@/context/ModalContext'
+import { LanguageContext } from '@/context/LanguageContext'
 import { Input, Select, Textarea, Checkbox } from '@/components/ui/Input'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -10,21 +11,36 @@ import * as z from 'zod'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import axios from 'axios'
+import { getCountries, getCountryCallingCode, type Country } from 'react-phone-number-input'
 
 // 1. Define Form Schema with Zod to match your payload structure mapping
-const contactSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Invalid email address').min(1, 'Email is required'),
-  code: z.string().min(1, 'Country code is required'),
-  phone: z.string().min(1, 'Phone number is required'),
-  website: z.string().optional(),
-  cooperativeName: z.string().min(1, 'Company name is required'),
-  purpose: z.string().min(1, 'Please select a purpose'),
-  thoughts: z.string().optional(),
-  date: z.string().min(1, 'Preferred date is required'),
-  time: z.string().min(1, 'Preferred time is required'),
-  accept_privacy_t_n_c: z.boolean().refine((v) => v === true, 'Privacy policy must be accepted'),
-})
+const contactSchema = z
+  .object({
+    name: z.string().min(1, 'Name is required'),
+    email: z.string().email('Invalid email address').min(1, 'Email is required'),
+    code: z.string().min(1, 'Country code is required'),
+    phone: z.string().min(1, 'Phone number is required'),
+    website: z.string().optional(),
+    cooperativeName: z.string().min(1, 'Company name is required'),
+    purpose: z.string().min(1, 'Please select a purpose'),
+    thoughts: z.string().optional(),
+    date: z.string().min(1, 'Preferred date is required'),
+    time: z.string().min(1, 'Preferred time is required'),
+    accept_privacy_t_n_c: z.boolean().refine((v) => v === true, 'Privacy policy must be accepted'),
+  })
+  .refine(
+    (data) => {
+      if (!data.date || !data.time) return true
+      const now = new Date()
+      const selected = new Date(`${data.date}T${data.time}`)
+      const threshold = new Date(now.getTime() + 2 * 60 * 60 * 1000)
+      return selected >= threshold
+    },
+    {
+      message: 'Selection must be at least 2 hours from now',
+      path: ['time'],
+    }
+  )
 
 type ContactFormData = z.infer<typeof contactSchema>
 
@@ -36,12 +52,42 @@ enum STEPS {
 
 const ContactModal = () => {
   const { isModalOpen, modalType, closeModal } = useContext(ModalContext)
+  const { lang } = useContext(LanguageContext)
   const [step, setStep] = useState<STEPS>(STEPS.CONTACT)
 
+  // 1. Helper for flag emoji
+  const getFlagEmoji = (countryCode: string) => {
+    const codePoints = countryCode
+      .toUpperCase()
+      .split('')
+      .map((char) => 127397 + char.charCodeAt(0))
+    return String.fromCodePoint(...codePoints)
+  }
+
+  // 2. Memoized country options (just the calling codes)
+  const countryOptions = useMemo(() => {
+    const uniqueCodes = new Set<string>()
+    return getCountries()
+      .map((country) => {
+        const callingCode = getCountryCallingCode(country)
+        return {
+          value: country,
+          callingCode: callingCode,
+          label: `+${callingCode}`,
+        }
+      })
+      .filter((item) => {
+        if (uniqueCodes.has(item.callingCode)) return false
+        uniqueCodes.add(item.callingCode)
+        return true
+      })
+      .sort((a, b) => parseInt(a.callingCode) - parseInt(b.callingCode))
+  }, [])
+
   const { data: formContent, isLoading: isContentLoading } = useQuery({
-    queryKey: ['form-content'],
+    queryKey: ['form-content', lang.code],
     queryFn: async () => {
-      const res = await axios.get(`/api/forms`)
+      const res = await axios.get(`/api/forms?lang=${lang.code}`)
       return res.data
     },
     enabled: isModalOpen && modalType === ModalType.FORM,
@@ -54,11 +100,12 @@ const ContactModal = () => {
     formState: { errors },
     reset,
     trigger,
+    watch,
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
       name: '',
-      code: '49',
+      code: 'DE',
       phone: '',
       email: '',
       website: '',
@@ -83,7 +130,7 @@ const ContactModal = () => {
       const payload = {
         data: {
           name: formData.name,
-          country_code: parseInt(formData.code) || 0,
+          country_code: parseInt(getCountryCallingCode(formData.code as Country)) || 0,
           phone: parseInt(formData.phone) || 0,
           email: formData.email,
           website_url: formData.website || '',
@@ -127,12 +174,23 @@ const ContactModal = () => {
       isValid = await trigger(['name', 'email', 'phone', 'code'])
     } else if (step === STEPS.ABOUT) {
       isValid = await trigger(['cooperativeName', 'purpose'])
+    } else if (step === STEPS.SCHEDULE) {
+      isValid = await trigger(['date', 'time', 'accept_privacy_t_n_c'])
     }
 
     if (isValid) {
       setStep((v) => v + 1)
     }
   }
+
+  // 3. Date/Time helpers
+  const today = new Date().toISOString().split('T')[0]
+  const selectedDate = watch('date')
+  const minTimeForToday = useMemo(() => {
+    const now = new Date()
+    const future = new Date(now.getTime() + 2 * 60 * 60 * 1000)
+    return future.toTimeString().slice(0, 5) // "HH:mm"
+  }, [])
 
   const onSubmitForm = async (data: ContactFormData) => {
     if (step === STEPS.SCHEDULE) {
@@ -212,9 +270,13 @@ const ContactModal = () => {
             <div>
               <label className={labelClass}>Contact Number</label>
               <div className="flex gap-2">
-                <Input className="w-[30%] text-center" placeholder="49" {...register('code')} />
+                <Select
+                  className="w-[84px] appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M2.5%204.5L6%208L9.5%204.5%22%20stroke%3D%22black%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-position-[right_10px_center] bg-no-repeat pr-6 text-sm font-medium"
+                  {...register('code')}
+                  options={countryOptions}
+                />
                 <Input
-                  className="w-full"
+                  className="flex-1"
                   placeholder="1234456789"
                   type="tel"
                   {...register('phone')}
@@ -259,9 +321,10 @@ const ContactModal = () => {
                     { value: 'demo', label: 'Software Demo' },
                     { value: 'pricing', label: 'Pricing Inquiry' },
                     { value: 'other', label: 'Other' },
+                    { value: 'software-demo', label: 'Software Demo' },
                   ]
                 }
-                className="appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M2.5%204.5L6%208L9.5%204.5%22%20stroke%3D%22black%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_12px_center] bg-no-repeat pr-10"
+                className="appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M2.5%204.5L6%208L9.5%204.5%22%20stroke%3D%22black%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-position-[right_12px_center] bg-no-repeat pr-10"
               />
               {errors.purpose && <span className={errorClass}>{errors.purpose.message}</span>}
             </div>
@@ -285,12 +348,17 @@ const ContactModal = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className={labelClass}>Preferred Date</label>
-                <Input type="date" {...register('date')} />
+                <Input type="date" min={today} {...register('date')} />
                 {errors.date && <span className={errorClass}>{errors.date.message}</span>}
               </div>
               <div>
                 <label className={labelClass}>Preferred Time</label>
-                <Input placeholder="00:00" type="time" {...register('time')} />
+                <Input
+                  placeholder="00:00"
+                  type="time"
+                  min={selectedDate === today ? minTimeForToday : undefined}
+                  {...register('time')}
+                />
                 {errors.time && <span className={errorClass}>{errors.time.message}</span>}
               </div>
             </div>
@@ -338,8 +406,3 @@ const ContactModal = () => {
 }
 
 export default ContactModal
-
-//   return <></>
-// }
-
-// export default ContactModal

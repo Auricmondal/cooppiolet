@@ -4,14 +4,16 @@ import FadeContent from '@/components/animations/FadeContent'
 import { ElementRotation, TextHover } from '@/components/animations/TextHover'
 import { NavbarContext } from '@/context/NavbarContext'
 import { ModalContext, ModalType } from '@/context/ModalContext'
+import { LanguageContext } from '@/context/LanguageContext'
 import gsap from 'gsap'
-import { ArrowUpRight, Mail, Menu, X } from 'lucide-react'
+import { ArrowUpRight, Globe, Mail, Menu, X } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useContext, useEffect, useRef, useState } from 'react'
 
 const MobileNavbar = () => {
   const { isNavbarOpen, navbarContent, toggleDrawer } = useContext(NavbarContext)
+  const { lang, toggleLang } = useContext(LanguageContext)
 
   return (
     <div className="flex w-full items-center justify-between px-4 py-4 transition-all duration-300 lg:hidden">
@@ -28,7 +30,15 @@ const MobileNavbar = () => {
           )}
         </Link>
       </div>
-      <div>
+      <div className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          onClick={toggleLang}
+          className={`flex items-center gap-1.5 font-medium uppercase transition-colors ${!isNavbarOpen ? 'text-cst-primary' : 'text-cst-neutral-08'}`}
+        >
+          <Globe size={16} />
+          {lang.code}
+        </Button>
         <MenuButton />
       </div>
     </div>

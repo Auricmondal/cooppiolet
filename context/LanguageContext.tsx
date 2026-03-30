@@ -3,28 +3,23 @@
 import React, { createContext, useState } from 'react'
 import { Language } from '@/types/language'
 
-const languages: Language[] = [
-  { code: 'GB', name: 'English' },
-  { code: 'DE', name: 'German' },
-]
-
 export const LanguageContext = createContext({
-  lang: { code: 'GB', name: 'English' },
+  lang: { code: 'en', name: 'English' },
   toggleLang: () => {},
-  languages: [{ code: 'GB', name: 'English' }],
+  languages: [{ code: 'en', name: 'English' }],
 })
 
 export const LanguageProvider = ({ children }: { children: React.ReactNode }) => {
-  const languages = [
-    { code: 'GB', name: 'English' },
-    { code: 'DE', name: 'German' },
+  const languages: Language[] = [
+    { code: 'en', name: 'English' },
+    { code: 'de', name: 'German' },
   ]
 
-  const [lang, setLang] = useState({ code: 'GB', name: 'English' })
+  const [lang, setLang] = useState({ code: 'en', name: 'English' })
 
   const toggleLang = () => {
     setLang((prev) => {
-      const nextCode = prev.code === 'GB' ? 'DE' : 'GB'
+      const nextCode = prev.code === 'en' ? 'de' : 'en'
       return languages.find((l) => l.code === nextCode) || prev
     })
   }

@@ -4,6 +4,8 @@ import { OtherFeatures } from '@/components/ui/OtherFeatures'
 import { FeatureListBlock } from '@/components/ui/FeatureListBlock'
 import FadeContent from '@/components/animations/FadeContent'
 import HeaderAnimation from '@/components/animations/HeaderAnimation'
+import { LanguageContext } from '@/context/LanguageContext'
+import { useContext } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { HomeResponse, ProductFeature } from '@/types/home'
@@ -11,11 +13,14 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 const THEMES: ThemeType[] = ['teal', 'purple', 'burgundy', 'light-pink', 'forest']
 
-const FeatureHighlights = () => {
+const FeatureHighlights = ({ initialData }: { initialData?: HomeResponse }) => {
+  const { lang } = useContext(LanguageContext)
+
   const { data, isLoading } = useQuery<HomeResponse>({
-    queryKey: ['home'],
+    queryKey: ['home', lang.code],
+    initialData: lang.code === 'en' ? initialData : undefined,
     queryFn: async () => {
-      const res = await axios.get('/api/home')
+      const res = await axios.get(`/api/home?lang=${lang.code}`)
       return res.data
     },
   })

@@ -69,7 +69,6 @@ interface ModalProps {
 }
 
 const Modal = ({
-  type,
   isBlocking = true,
   position = 'center',
   Image: ModalImage,

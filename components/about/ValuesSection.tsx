@@ -6,22 +6,27 @@ import { Shield, BookOpen, Layers, Users } from 'lucide-react'
 import Image from 'next/image'
 import { H2 } from '../global/Typography'
 import { Skeleton } from '../ui/skeleton'
+import { LanguageContext } from '@/context/LanguageContext'
+import { useContext } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import { OurStand, Quote } from '@/types/about'
+import { OurStand, Quote, AboutResponse } from '@/types/about'
 
-const ValuesSection = () => {
-  const { data, isLoading } = useQuery({
-    queryKey: ['about'],
+const ValuesSection = ({ initialData }: { initialData?: AboutResponse }) => {
+  const { lang } = useContext(LanguageContext)
+
+  const { data, isLoading } = useQuery<AboutResponse>({
+    queryKey: ['about', lang.code],
+    initialData: lang.code === 'en' ? initialData : undefined,
     queryFn: async () => {
-      const res = await axios.get('/api/about')
+      const res = await axios.get(`/api/about?lang=${lang.code}`)
       return res.data
     },
   })
 
   if (isLoading) {
     return (
-      <section className="relative flex min-h-[100vh] flex-col items-center justify-start overflow-hidden pt-32 pb-48 lg:min-h-screen lg:pt-40">
+      <section className="relative flex min-h-screen flex-col items-center justify-start overflow-hidden pt-32 pb-48 lg:min-h-screen lg:pt-40">
         <div className="relative z-30 flex w-full max-w-[1200px] flex-col items-center px-4 text-center">
           <Skeleton className="mb-6 h-32 w-full max-w-4xl" />
           <Skeleton className="mb-10 h-12 w-full max-w-xl" />
@@ -31,9 +36,10 @@ const ValuesSection = () => {
     )
   }
 
-  const ourStand: OurStand = data?.data.our_stand
+  const ourStand: OurStand | undefined = data?.data.our_stand
+  const quote: Quote | undefined = data?.data.quote
 
-  const quote: Quote = data?.data.quote
+  if (!ourStand || !quote) return null
 
   return (
     <section className="w-full bg-[#FFFFFF]">
@@ -61,7 +67,7 @@ const ValuesSection = () => {
             return (
               <div
                 key={i}
-                className="bg-cst-primary lg:bg-cst-primary/80 relative top-auto flex flex-col overflow-hidden rounded-md backdrop-blur-md lg:sticky lg:top-[var(--sticky-top)] lg:flex-row"
+                className="bg-cst-primary lg:bg-cst-primary/80 relative top-auto flex flex-col overflow-hidden rounded-md backdrop-blur-md lg:sticky lg:top-(--sticky-top) lg:flex-row"
                 style={
                   {
                     '--sticky-top': `calc(100px )`,

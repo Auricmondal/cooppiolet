@@ -24,7 +24,7 @@ export interface ProductFeatureData {
 
 export const ProductFeatureBlock = ({
   data,
-  index,
+
   theme,
 }: {
   data: ProductFeatureData

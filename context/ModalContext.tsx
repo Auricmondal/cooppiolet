@@ -20,10 +20,6 @@ const ModalProvider = ({ children }: { children: React.ReactNode }) => {
   const [modalContent, setModalContent] = useState<React.ReactNode>(null)
   const [modalType, setModalType] = useState(ModalType.FORM)
 
-  const toggleModal = () => {
-    setIsModalOpen((prev) => !prev)
-  }
-
   const openModal = (type: ModalType, content: React.ReactNode) => {
     setModalType(type)
     setModalContent(content)

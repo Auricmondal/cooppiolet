@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import Modal from './Modal'
 import { ModalType } from '@/context/ModalContext'
 import { NewsletterContent } from '@/types/newsletter'
@@ -8,9 +8,11 @@ import { useUserTracking } from '@/context/CookieContext'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { toast } from 'sonner'
+import { LanguageContext } from '@/context/LanguageContext'
+import { Skeleton } from '@/components/ui/skeleton'
 
 // ✅ Validation schema
 const newsletterSchema = z.object({
@@ -25,13 +27,24 @@ const NewsletterClient = ({ content }: { content: NewsletterContent }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [hasDismissed, setHasDismissed] = useState(false)
 
+  const { lang } = useContext(LanguageContext)
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['newsletter', lang.code],
+    initialData: lang.code === 'en' ? content : undefined,
+    queryFn: async () => {
+      const res = await axios.get(`/api/newsletter?lang=${lang.code}`)
+      return res.data
+    },
+  })
+
   // ⏱️ Delay open
   useEffect(() => {
     if (!isInitialized || isSubscribed || hasDismissed) return
 
     const timer = setTimeout(() => {
       setIsOpen(true)
-    }, 20000)
+    }, 10000)
 
     return () => clearTimeout(timer)
   }, [isInitialized, isSubscribed, hasDismissed])
@@ -90,6 +103,33 @@ const NewsletterClient = ({ content }: { content: NewsletterContent }) => {
     subscribe(data)
   }
 
+  // Show skeleton while loading
+  if (isLoading) {
+    return (
+      <Modal
+        type={ModalType.NEWSLETTER}
+        isBlocking={true}
+        position="center"
+        header={{
+          title: 'Loading...',
+          description: 'Please wait while we load the newsletter content.',
+        }}
+        footer={{
+          primaryBtn: {
+            label: 'Loading...',
+            onClick: () => {},
+          },
+        }}
+      >
+        <div className="space-y-4">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+      </Modal>
+    )
+  }
+
   if (!isOpen || isSubscribed || hasDismissed) return null
 
   return (
@@ -97,10 +137,10 @@ const NewsletterClient = ({ content }: { content: NewsletterContent }) => {
       type={ModalType.NEWSLETTER}
       isBlocking={true}
       position="center"
-      Image={content?.banner}
+      Image={data?.banner}
       header={{
-        title: content?.title || 'Subscribe',
-        description: content?.sub_heading,
+        title: data?.title || 'Subscribe',
+        description: data?.sub_heading,
         close: true,
         closeAction: () => {
           setIsOpen(false)
@@ -109,7 +149,7 @@ const NewsletterClient = ({ content }: { content: NewsletterContent }) => {
       }}
       footer={{
         primaryBtn: {
-          label: isPending ? 'Subscribing...' : content?.button_label || 'Subscribe',
+          label: isPending ? 'Subscribing...' : data?.button_label || 'Subscribe',
           onClick: handleSubmit(onSubmit),
         },
       }}

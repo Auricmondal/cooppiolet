@@ -3,7 +3,7 @@ import { Method, strapiRequest } from '@/lib/api'
 import PrivacyClient from './PrivacyClient'
 
 const PrivacyPage = async () => {
-  const initialData = await strapiRequest('/privacy-policy?populate=*', Method.GET)
+  const initialData = await strapiRequest('/privacy-policy?populate=*&locale=en', Method.GET)
 
   return (
     <PrimaryWrapper>
