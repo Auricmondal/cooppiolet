@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import React from 'react'
 import Image from 'next/image'
 import { ArrowRightCircle } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export interface TabData {
   id: string
@@ -20,6 +21,12 @@ interface InteractiveTabsProps {
 const InteractiveTabs = ({ tabs, activeTab, onTabHover }: InteractiveTabsProps) => {
   const activeContent = tabs.find((t) => t.id === activeTab) || tabs[0]
 
+  const router = useRouter()
+
+  const handleClick = () => {
+    router.push(`/#${activeContent.title.replace(/\s+/g, '-').toLowerCase()}`)
+  }
+
   return (
     <div className="flex min-h-[550px] w-full flex-col overflow-hidden rounded-[2rem] bg-white p-4 shadow-[0_40px_100px_rgba(0,0,0,0.15)] ring-4 ring-white/60 backdrop-blur-md lg:flex-row lg:p-6">
       {/* Left Sidebar (Tabs) */}
@@ -34,9 +41,9 @@ const InteractiveTabs = ({ tabs, activeTab, onTabHover }: InteractiveTabsProps) 
                 variant="ghost"
                 rounded="lg"
                 onMouseEnter={() => onTabHover(tab.id)}
-                onClick={() => onTabHover(tab.id)}
+                onClick={handleClick}
                 className={`group flex h-auto items-center justify-between gap-4 border-none p-3 text-left whitespace-normal transition-all duration-500 ease-out hover:bg-slate-50 ${
-                  isActive ? 'scale-[1.02] bg-[#F4F6F6] shadow-inner' : 'bg-transparent'
+                  isActive ? 'scale-[1.02] bg-[#F4F6F6]' : 'bg-transparent'
                 }`}
               >
                 <div className="flex w-full items-center gap-4">
@@ -47,7 +54,7 @@ const InteractiveTabs = ({ tabs, activeTab, onTabHover }: InteractiveTabsProps) 
                   </div>
                   <div className="flex flex-1 flex-col items-start gap-1">
                     {tab.badge && (
-                      <span className="-mb-0.5 rounded-full bg-[#dc1186] px-2 py-[2px] text-[0.6rem] leading-none font-bold tracking-widest text-white uppercase">
+                      <span className="from-cst-primary to-cst-primary-light -mb-0.5 rounded-full bg-gradient-to-r px-2 py-2 text-[0.6rem] leading-none font-bold tracking-widest text-white uppercase">
                         {tab.badge}
                       </span>
                     )}

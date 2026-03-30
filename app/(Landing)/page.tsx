@@ -5,8 +5,10 @@ import Solutions from '@/components/home/Solutions'
 import FeatureHighlights from '@/components/home/FeatureHighlights'
 import FAQ from '@/components/home/FAQ'
 import CTA from '@/components/global/CTA'
+import axios from 'axios'
 
-const page = () => {
+const page = async () => {
+  // const data = await axios.get('/api/home')
   return (
     <main className="flex min-h-screen w-full flex-col overflow-hidden bg-white">
       <Hero />

@@ -45,7 +45,7 @@ export const H6: React.FC<Props> = ({ className, children }) => (
 /* ------------------ Text ------------------ */
 
 export const P: React.FC<Props> = ({ className, children }) => (
-  <p className={cn('text-[1rem] md:text-[1.25rem] lg:text-[1.5rem]', className)}>{children}</p>
+  <p className={cn('text-lg', className)}>{children}</p>
 )
 
 export const Small: React.FC<Props> = ({ className, children }) => (

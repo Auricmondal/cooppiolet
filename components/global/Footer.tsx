@@ -28,7 +28,7 @@ const Footer = () => {
       <div className="pointer-events-none absolute top-0 right-0 h-[600px] w-[600px] rounded-full bg-linear-to-bl from-teal-100/50 via-emerald-50/20 to-transparent blur-[120px]"></div>
       <div className="pointer-events-none absolute bottom-1/2 left-0 h-[800px] w-[800px] rounded-full bg-linear-to-tr from-blue-100/50 via-indigo-50/30 to-transparent blur-[120px]"></div>
 
-      <div className="relative z-10 mx-auto mb-24 max-w-[1400px] px-4 md:px-8">
+      <div className="relative z-10 mx-auto mb-24 max-w-[2000px] px-4 md:px-8">
         {/* Bento Grid Layout for Footer Content */}
         <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-12">
           {/* Box 1: Brand & Image Placeholder (Massive Left Box) */}
@@ -85,22 +85,16 @@ const Footer = () => {
                 </h4>
                 <nav className="flex flex-col gap-6">
                   <Link
-                    href="#"
+                    href="/"
                     className="w-max text-lg font-medium text-slate-600 transition-all hover:translate-x-2 hover:text-slate-900"
                   >
                     Home
                   </Link>
                   <Link
-                    href="#"
+                    href="/about"
                     className="w-max text-lg font-medium text-slate-600 transition-all hover:translate-x-2 hover:text-slate-900"
                   >
                     About
-                  </Link>
-                  <Link
-                    href="#"
-                    className="w-max text-lg font-medium text-slate-600 transition-all hover:translate-x-2 hover:text-slate-900"
-                  >
-                    Contact
                   </Link>
                 </nav>
               </div>
@@ -115,22 +109,16 @@ const Footer = () => {
                 </h4>
                 <nav className="flex flex-col gap-6">
                   <Link
-                    href="#"
+                    href="/tnc"
                     className="w-max text-lg font-medium text-slate-600 transition-all hover:translate-x-2 hover:text-slate-900"
                   >
-                    Terms
+                    Terms and Conditions
                   </Link>
                   <Link
-                    href="#"
+                    href="/privacy"
                     className="w-max text-lg font-medium text-slate-600 transition-all hover:translate-x-2 hover:text-slate-900"
                   >
                     Privacy
-                  </Link>
-                  <Link
-                    href="#"
-                    className="w-max text-lg font-medium text-slate-600 transition-all hover:translate-x-2 hover:text-slate-900"
-                  >
-                    Cookies
                   </Link>
                 </nav>
               </div>

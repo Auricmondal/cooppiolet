@@ -44,7 +44,7 @@ export const StrapiRichTextRenderer = ({ content }: { content: Node[] }) => {
 
       case 'link':
         return (
-          <Link key={i} href={node.url} className="text-blue-600 underline">
+          <Link key={i} href={node.url} target="_blank" className="text-cst-primary underline">
             {node.children?.map(renderNode)}
           </Link>
         )

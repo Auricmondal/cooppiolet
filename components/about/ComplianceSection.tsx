@@ -2,8 +2,14 @@
 import React, { useEffect, useRef, useState } from 'react'
 import FadeContent from '@/components/animations/FadeContent'
 import HeaderAnimation from '@/components/animations/HeaderAnimation'
-import { Plus, Minus } from 'lucide-react'
+
 import Image from 'next/image'
+import { Skeleton } from '../ui/skeleton'
+import axios from 'axios'
+import { useQuery } from '@tanstack/react-query'
+import { Overview, OverviewCard } from '@/types/about'
+import { StrapiRichTextRenderer } from '../global/RichTextRenderer'
+import { ImageData } from '@/types/home'
 
 const items = [
   {
@@ -60,32 +66,38 @@ const ComplianceSection = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0)
   const itemRefs = useRef<(HTMLDivElement | null)[]>([])
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const index = Number(entry.target.getAttribute('data-index'))
-            setOpenIndex(index)
-          }
-        })
-      },
-      {
-        root: null,
-        // CHANGED: Shifted the trigger zone lower down the screen.
-        // It now triggers when the item crosses the bottom 40% of the viewport,
-        // ensuring the top of the item is safely on screen before it expands.
-        rootMargin: '-10% 0px -40% 0px',
-        threshold: 0,
-      }
+  const { data, isLoading } = useQuery({
+    queryKey: ['about'],
+    queryFn: async () => {
+      const res = await axios.get('/api/about')
+      return res.data
+    },
+  })
+
+  if (isLoading) {
+    return (
+      <section className="relative flex min-h-[100vh] flex-col items-center justify-start overflow-hidden px-6 pt-32 pb-48 lg:min-h-screen lg:pt-40">
+        <div className="relative z-30 flex w-full max-w-[1200px] flex-col items-center px-4">
+          <Skeleton className="mb-6 h-32 w-full max-w-4xl" />
+          <Skeleton className="mb-10 h-12 w-full max-w-xl" />
+        </div>
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="bg-cst-neutral-01/50 mb-6 w-full max-w-[800px] rounded-md border-[#111113]/10 p-6"
+          >
+            <Skeleton className="mb-4 h-2 w-1/8" />
+            <Skeleton className="mb-4 h-8 w-1/3" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="mt-2 h-4 w-full" />
+            <Skeleton className="mt-2 h-4 w-5/6" />
+          </div>
+        ))}
+      </section>
     )
+  }
 
-    itemRefs.current.forEach((ref) => {
-      if (ref) observer.observe(ref)
-    })
-
-    return () => observer.disconnect()
-  }, [])
+  const overview: Overview = data?.data.overview
 
   return (
     <section className="relative w-full overflow-clip py-24 lg:py-[250px]">
@@ -101,26 +113,19 @@ const ComplianceSection = () => {
       </div>
       <div className="mx-auto max-w-[2000px] px-6">
         <div className="relative grid grid-cols-1 items-start lg:grid-cols-2 lg:gap-24">
-          {/* LEFT: STICKY HEADLINE */}
-          {/* CHANGED: Adjusted to lg:top-0 (or put your navbar height here, e.g., top-[80px]) so it pins exactly at the top */}
           <div className="mb-16 self-start lg:sticky lg:top-[100px] lg:mb-0">
             <HeaderAnimation
-              text="Built to withstand scrutiny."
+              text={overview.title}
               className="font-sans text-5xl leading-[0.95] font-extrabold tracking-[-0.05em] text-[#111113] uppercase md:text-7xl lg:text-[7.5rem]"
             />
 
             <FadeContent blur delay={400} duration={800} className="mt-12 max-w-md">
-              <p className="text-[1.1rem] leading-[1.6] text-[#4A4A4A]">
-                German cooperatives operate under one of the most rigorous administrative and legal
-                frameworks in European business. Every aspect of Coop-Pilot is designed to make
-                compliance the default state.
-              </p>
+              <p className="text-[1.1rem] leading-[1.6] text-[#4A4A4A]">{overview.description}</p>
             </FadeContent>
           </div>
 
-          {/* RIGHT: INDUSTRIAL ACCORDION */}
           <div className="flex flex-col gap-4 pb-[30vh]">
-            {items.map((item, i) => {
+            {overview.card.map((item: OverviewCard, i) => {
               const isOpen = openIndex === i
               return (
                 <div
@@ -129,7 +134,6 @@ const ComplianceSection = () => {
                     itemRefs.current[i] = el
                   }}
                   data-index={i}
-                  // CHANGED: Added scroll-mt-[120px] to act as a buffer zone at the top of the screen
                   className={`group scroll-mt-[120px] overflow-hidden rounded-md border transition-all duration-500 ${
                     isOpen ? 'border-transparent shadow-sm' : 'border-[#111113]/10'
                   }`}
@@ -139,9 +143,8 @@ const ComplianceSection = () => {
                 >
                   <button
                     onClick={() => setOpenIndex(isOpen ? null : i)}
-                    className="flex w-full items-start justify-between p-8 text-left transition-colors duration-500 md:p-12 lg:p-14"
+                    className="flex w-full cursor-pointer items-start justify-between p-8 text-left transition-colors duration-500 md:p-12 lg:p-14"
                   >
-                    {/* ... Button content remains exactly the same ... */}
                     <div className="flex flex-col gap-6">
                       <span
                         className={`${isOpen ? 'text-cst-neutral-04' : 'text-cst-neutral-02'} text-[4rem] -tracking-[10%]`}
@@ -159,18 +162,17 @@ const ComplianceSection = () => {
                   <div
                     className={`grid transition-all duration-500 ease-[cubic-bezier(0.87,0,0.13,1)] ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
                   >
-                    {/* ... Body content remains exactly the same ... */}
                     <div className="overflow-hidden">
                       <div className="px-8 pt-0 pb-12 md:px-12 md:pb-16 lg:px-14 lg:pb-20">
                         <div
                           className={`max-w-2xl md:pl-12 lg:pl-16 ${isOpen ? 'border-[#111113]/20' : 'border-cst-primary'}`}
                         >
-                          {item.body.split('\n\n').map((para, j) => (
+                          {item.description.split('\n').map((paragraph, idx) => (
                             <p
-                              key={j}
-                              className={`mb-6 text-[1rem] leading-[1.6] last:mb-0 md:text-[1.1rem] md:leading-[1.7] ${isOpen ? 'text-[#111113]/70' : 'text-[#4A4A4A]'}`}
+                              key={idx}
+                              className="mb-4 text-[1.05rem] leading-[1.7] text-[#4A4A4A]"
                             >
-                              {para}
+                              {paragraph}
                             </p>
                           ))}
                         </div>
@@ -185,20 +187,16 @@ const ComplianceSection = () => {
 
         {/* BOTTOM: INDUSTRIAL TRUST BADGES (Light Theme) */}
         <div className="mt-32 border-t border-[#111113]/10 pt-16">
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:gap-6">
-            {[
-              { label: 'DSGVO', sub: 'EU-Konformität' },
-              { label: 'BDSG-neu', sub: 'Bundesdatenschutz' },
-              { label: 'GoBD', sub: 'Revisionssicherheit' },
-              { label: 'ISO 27001', sub: 'Certified Hosting' },
-            ].map((badge, i) => (
+          <div className="mx-auto grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] items-center gap-8 md:max-w-[50vw]">
+            {' '}
+            {overview.badges.map((badge: ImageData, i) => (
               <Image
                 key={i}
-                src={`/assets/compliance-${badge.label.toLowerCase()}.svg`}
-                alt={`${badge.label} Badge`}
+                src={`${process.env.NEXT_PUBLIC_STRAPI_URL}${badge.url}`}
+                alt={badge.alternativeText || 'Trust Badge'}
                 width={200}
                 height={80}
-                className="h-auto w-full object-contain"
+                className="h-30 w-30 rounded-full object-cover"
               />
             ))}
           </div>

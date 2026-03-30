@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import { Check } from 'lucide-react'
 import FadeContent from '@/components/animations/FadeContent'
+import { ImageData } from '@/types/home'
 
 export type ThemeType = 'teal' | 'purple' | 'burgundy' | 'light-pink' | 'forest'
 
@@ -18,7 +19,7 @@ export interface ProductFeatureData {
     title: string
     description: string
   }[]
-  productImage: string
+  productImage: ImageData
 }
 
 export const ProductFeatureBlock = ({
@@ -126,8 +127,8 @@ export const ProductFeatureBlock = ({
         <FadeContent blur delay={300} duration={800} className="relative w-full">
           <div className="relative mx-auto aspect-[4/5] w-full max-w-[500px] overflow-hidden rounded-[24px] bg-transparent shadow-2xl ring-1 ring-white/10 lg:mx-0">
             <Image
-              src={data.productImage}
-              alt={data.tagLabel}
+              src={`${process.env.NEXT_PUBLIC_STRAPI_URL}${data.productImage.url}`}
+              alt={data.productImage.alternativeText || 'Product Feature Image'}
               fill
               priority
               className="object-cover"
